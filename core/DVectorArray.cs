@@ -76,8 +76,8 @@ namespace g4
         }
         public DVectorArray3d(double[] data) : base(data) { }
         public Vector3d this[int i] {
-            get { return new Vector3d(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]); }
-            set { Set(i, value[0], value[1], value[2]); }
+            get => new Vector3d(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]);
+            set => Set(i, value[0], value[1], value[2]);
         }
 
         public IEnumerable<Vector3d> AsVector3d() {
@@ -92,8 +92,8 @@ namespace g4
         public DVectorArray3f(int nCount = 0) : base(nCount) { }
         public DVectorArray3f(float[] data) : base(data) { }
         public Vector3f this[int i] {
-            get { return new Vector3f(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]); }
-            set { Set(i, value[0], value[1], value[2]); }
+            get => new Vector3f(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]);
+            set => Set(i, value[0], value[1], value[2]);
         }
 
         public IEnumerable<Vector3f> AsVector3f()
@@ -109,8 +109,8 @@ namespace g4
         public DVectorArray3i(int nCount = 0) : base(nCount) { }
         public DVectorArray3i(int[] data) : base(data) { }
         public Vector3i this[int i] {
-            get { return new Vector3i(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]); }
-            set { Set(i, value[0], value[1], value[2]); }
+            get => new Vector3i(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]);
+            set => Set(i, value[0], value[1], value[2]);
         }
         // [RMS] for CW/CCW codes
         public void Set(int i, int a, int b, int c, bool bCycle = false) {
@@ -138,8 +138,8 @@ namespace g4
         public DIndexArray3i(int nCount = 0) : base(nCount) { }
         public DIndexArray3i(int[] data) : base(data) { }
         public Index3i this[int i] {
-            get { return new Index3i(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]); }
-            set { Set(i, value[0], value[1], value[2]); }
+            get => new Index3i(vector[3 * i], vector[3 * i + 1], vector[3 * i + 2]);
+            set => Set(i, value[0], value[1], value[2]);
         }
         // [RMS] for CW/CCW codes
         public void Set(int i, int a, int b, int c, bool bCycle = false) {
@@ -222,8 +222,8 @@ namespace g4
         public DVectorArray2d(int nCount = 0) : base(nCount) { }
         public DVectorArray2d(double[] data) : base(data) { }
         public Vector2d this[int i] {
-            get { return new Vector2d(vector[2 * i], vector[2 * i + 1]); }
-            set { Set(i, value[0], value[1]); }
+            get => new Vector2d(vector[2 * i], vector[2 * i + 1]);
+            set => Set(i, value[0], value[1]);
         }
 
         public IEnumerable<Vector2d> AsVector2d() {
@@ -236,8 +236,8 @@ namespace g4
         public DVectorArray2f(int nCount = 0) : base(nCount) { }
         public DVectorArray2f(float[] data) : base(data) { }
         public Vector2f this[int i] {
-            get { return new Vector2f(vector[2 * i], vector[2 * i + 1]); }
-            set { Set(i, value[0], value[1]); }
+            get => new Vector2f(vector[2 * i], vector[2 * i + 1]);
+            set => Set(i, value[0], value[1]);
         }
 
         public IEnumerable<Vector2d> AsVector2f() {
@@ -253,8 +253,8 @@ namespace g4
         public DIndexArray2i(int nCount = 0) : base(nCount) { }
         public DIndexArray2i(int[] data) : base(data) { }
         public Index2i this[int i] {
-            get { return new Index2i(vector[2 * i], vector[2 * i + 1]); }
-            set { Set(i, value[0], value[1]); }
+            get => new Index2i(vector[2 * i], vector[2 * i + 1]);
+            set => Set(i, value[0], value[1]);
         }
 
         public IEnumerable<Index2i> AsIndex2i() {
