@@ -32,7 +32,7 @@ namespace g4
                         bits &= ~(1 << i);
                 }
             }
-            public int Data { get { return bits; } }
+            public int Data => bits;
         }
 
 
@@ -77,15 +77,9 @@ namespace g4
         }
 
 
-        public int Count
-        {
-            get { return max_index; }
-        }
+        public int Count => max_index;
 
-        public int TrueCount
-        {
-            get { return count; }
-        }
+        public int TrueCount => count;
 
 
         public bool Contains(int i)

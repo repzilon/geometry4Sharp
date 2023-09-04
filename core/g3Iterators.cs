@@ -67,8 +67,8 @@ namespace g4
             get => MapF(BaseList[index]);
             set => throw new NotImplementedException();
         }
-        public int Count { get { return BaseList.Count; } }
-        public bool IsReadOnly { get { return true; } }
+        public int Count => BaseList.Count;
+        public bool IsReadOnly => true;
 
         public void Add(int item) { throw new NotImplementedException(); }
         public void Clear() { throw new NotImplementedException(); }
@@ -126,8 +126,8 @@ namespace g4
             get => range.a + index;
             set => throw new NotImplementedException();
         }
-        public int Count { get { return range.Length+1; } }
-        public bool IsReadOnly { get { return true; } }
+        public int Count => range.Length + 1;
+        public bool IsReadOnly => true;
 
         public void Add(int item) { throw new NotImplementedException(); }
         public void Clear() { throw new NotImplementedException(); }

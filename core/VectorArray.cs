@@ -23,9 +23,7 @@ namespace g4
             array = data;
         }
 
-        public int Count {
-            get { return array.Length/3; }
-        }
+        public int Count => array.Length / 3;
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -188,10 +186,7 @@ namespace g4
             array = data;
         }
 
-        public int Count
-        {
-            get { return array.Length / 2; }
-        }
+        public int Count => array.Length / 2;
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -289,9 +284,7 @@ namespace g4
             array = data;
         }
 
-        public int Count {
-            get { return array.Length / 4; }
-        }
+        public int Count => array.Length / 4;
 
         public IEnumerator<T> GetEnumerator()
         {

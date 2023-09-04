@@ -62,26 +62,15 @@ namespace g4
         //    get { return Blocks.Count * nBlockSize;  }
         //}
 
-        public int Length {
-            get { return iCurBlock * nBlockSize + iCurBlockUsed;  }
-        }
+        public int Length => iCurBlock * nBlockSize + iCurBlockUsed;
 
-        public int BlockCount {
-            get { return nBlockSize; }
-        }
+        public int BlockCount => nBlockSize;
 
-        public int size {
-            get { return Length; }
-        }
-                
-        public bool empty 
-        {
-            get { return iCurBlock == 0 && iCurBlockUsed == 0; }
-        }
-        
-        public int MemoryUsageBytes {
-            get { return (Blocks.Count == 0) ? 0 : Blocks.Count * nBlockSize * System.Runtime.InteropServices.Marshal.SizeOf(Blocks[0][0]); }
-        }
+        public int size => Length;
+
+        public bool empty => iCurBlock == 0 && iCurBlockUsed == 0;
+
+        public int MemoryUsageBytes => (Blocks.Count == 0) ? 0 : Blocks.Count * nBlockSize * System.Runtime.InteropServices.Marshal.SizeOf(Blocks[0][0]);
 
         public void Add(T value)
         {

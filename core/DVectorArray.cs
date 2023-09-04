@@ -25,9 +25,7 @@ namespace g4
             vector = new DVector<T>(data);
         }
 
-        public int Count {
-            get { return vector.Length/3; }
-        }
+        public int Count => vector.Length / 3;
 
         // we should just be passing back DVector enumerator, but it doesn't have one??
         public IEnumerator<T> GetEnumerator()
@@ -182,10 +180,7 @@ namespace g4
             vector = new DVector<T>(data);
         }
 
-        public int Count
-        {
-            get { return vector.Length / 2; }
-        }
+        public int Count => vector.Length / 2;
 
         public IEnumerator<T> GetEnumerator()
         {
