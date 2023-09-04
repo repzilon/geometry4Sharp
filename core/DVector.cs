@@ -190,19 +190,17 @@ namespace g4
         public T this[int i]
         {
             // [RMS] bit-shifts here are significantly faster
-            get             // [RMS] bit-shifts here are significantly faster
-            =>
-                //int bi = i / nBlockSize;
-                //return Blocks[bi][i - (bi * nBlockSize)];
-                //int bi = i >> nShiftBits;
-                //return Blocks[bi][i - (bi << nShiftBits)];
-                Blocks[i >> nShiftBits][i & nBlockIndexBitmask];
-            set =>
-                //int bi = i / nBlockSize;
-                //Blocks[bi][i - (bi * nBlockSize)] = value;
-                //int bi = i >> nShiftBits;
-                //Blocks[bi][i - (bi << nShiftBits)] = value;
-                Blocks[i >> nShiftBits][i & nBlockIndexBitmask] = value;
+            //int bi = i / nBlockSize;
+            //return Blocks[bi][i - (bi * nBlockSize)];
+            //int bi = i >> nShiftBits;
+            //return Blocks[bi][i - (bi << nShiftBits)];
+            get => Blocks[i >> nShiftBits][i & nBlockIndexBitmask];
+
+            //int bi = i / nBlockSize;
+            //Blocks[bi][i - (bi * nBlockSize)] = value;
+            //int bi = i >> nShiftBits;
+            //Blocks[bi][i - (bi << nShiftBits)] = value;
+            set => Blocks[i >> nShiftBits][i & nBlockIndexBitmask] = value;
         }
 
 
