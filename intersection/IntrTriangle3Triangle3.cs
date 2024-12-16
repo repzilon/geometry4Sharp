@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace g4
 {
@@ -22,6 +23,28 @@ namespace g4
         {
             get { return triangle1; }
             set { triangle1 = value; Result = IntersectionResult.NotComputed; }
+        }
+
+        private const double PRECISION = 0.00001;
+        private const double PRECISION_SQR = PRECISION * PRECISION;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool NotEqual(double value1, double value2)
+        {
+            return System.Math.Abs(value1 - value2) > PRECISION;
+        }
+
+        /// <summary>
+        /// Verify if the two values are "equal" using a tolerance value
+        /// </summary>
+        /// <param name="a">First value</param>
+        /// <param name="b">Second value</param>
+        /// <param name="tolerance">Tolerance to use to compare</param>
+        /// <returns>True if the difference between both values are not greater than the tolerance</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool AlmostEqualTo(double a, double b, double tolerance = 0.0001)
+        {
+            return Math.Abs(a - b) <= Math.Abs(tolerance);
         }
 
         // If true, will return intersection polygons for co-planar triangles.
@@ -253,11 +276,20 @@ namespace g4
             // Get normal vector of triangle0.
             Vector3d N0 = E0.V0.UnitCross(ref E0.V1);
 
+            // Check if triangle0 is degenerated
+            if (AlmostEqualTo(N0.LengthSquared, PRECISION_SQR))
+            {
+                return false;
+            }
+
             // Project triangle1 onto normal line of triangle0, test for separation.
             double N0dT0V0 = N0.Dot(ref triangle0.V0);
             double min1, max1;
             ProjectOntoAxis(ref triangle1, ref N0, out min1, out max1);
-            if (N0dT0V0 < min1 || N0dT0V0 > max1) {
+            if ((N0dT0V0 < min1 || N0dT0V0 > max1) && 
+                NotEqual(N0dT0V0, min1) &&
+                NotEqual(N0dT0V0, max1))
+            {
                 return false;
             }
 
@@ -270,9 +302,14 @@ namespace g4
             // Get normal vector of triangle1.
             Vector3d N1 = E1.V0.UnitCross(ref E1.V1);
 
+            // Check if triangle1 is degenerated
+            if (AlmostEqualTo(N1.LengthSquared, PRECISION_SQR))
+            {
+                return false;
+            }
+
             Vector3d dir;
             double min0, max0;
-            int i0, i1;
 
             Vector3d N0xN1 = N0.UnitCross(ref N1);
             if (N0xN1.Dot(ref N0xN1) >= MathUtil.ZeroTolerance) {
@@ -282,13 +319,16 @@ namespace g4
                 // separation.
                 double N1dT1V0 = N1.Dot(ref triangle1.V0);
                 ProjectOntoAxis(ref triangle0, ref N1, out min0, out max0);
-                if (N1dT1V0 < min0 || N1dT1V0 > max0) {
+                if ((N1dT1V0 < min0 || N1dT1V0 > max0) &&
+                    NotEqual(N1dT1V0, min0) &&
+                    NotEqual(N1dT1V0, max0))
+                {
                     return false;
                 }
 
                 // Directions E0[i0]xE1[i1].
-                for (i1 = 0; i1 < 3; ++i1) {
-                    for (i0 = 0; i0 < 3; ++i0) {
+                for (int i1 = 0; i1 < 3; ++i1) {
+                    for (int i0 = 0; i0 < 3; ++i0) {
                         dir = E0[i0].UnitCross(E1[i1]);  // could pass ref if we reversed these...need to negate?
                         ProjectOntoAxis(ref triangle0, ref dir, out min0, out max0);
                         ProjectOntoAxis(ref triangle1, ref dir, out min1, out max1);
@@ -300,7 +340,7 @@ namespace g4
 
             } else { // Triangles are parallel (and, in fact, coplanar).
                 // Directions N0xE0[i0].
-                for (i0 = 0; i0 < 3; ++i0) {
+                for (int i0 = 0; i0 < 3; ++i0) {
                     dir = N0.UnitCross(E0[i0]);
                     ProjectOntoAxis(ref triangle0, ref dir, out min0, out max0);
                     ProjectOntoAxis(ref triangle1, ref dir, out min1, out max1);
@@ -310,7 +350,7 @@ namespace g4
                 }
 
                 // Directions N1xE1[i1].
-                for (i1 = 0; i1 < 3; ++i1) {
+                for (int i1 = 0; i1 < 3; ++i1) {
                     dir = N1.UnitCross(E1[i1]);
                     ProjectOntoAxis(ref triangle0, ref dir, out min0, out max0);
                     ProjectOntoAxis(ref triangle1, ref dir, out min1, out max1);
