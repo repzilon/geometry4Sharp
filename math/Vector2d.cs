@@ -1,7 +1,5 @@
 using System;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using System.Text;
 
 namespace g4
 {
@@ -246,7 +244,7 @@ namespace g4
         }
         public bool Equals(Vector2d other)
         {
-            return (x == other.x && y == other.y);
+            return (x.Equals(other.x) && y.Equals(other.y));
         }
 
 
@@ -267,7 +265,7 @@ namespace g4
 
 
         public override string ToString() {
-            return string.Format("{0:F8} {1:F8}", x, y);
+            return $"{x:F8} {y:F8}";
         }
 
 

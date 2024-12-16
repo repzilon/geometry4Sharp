@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 #if G3_USING_UNITY
 using UnityEngine;
@@ -327,10 +325,10 @@ namespace g4
 
 
         public override string ToString() {
-            return string.Format("{0:F8} {1:F8} {2:F8}", x, y, z);
+            return $"{x:F8} {y:F8} {z:F8}";
         }
         public string ToString(string fmt) {
-            return string.Format("{0} {1} {2}", x.ToString(fmt), y.ToString(fmt), z.ToString(fmt));
+            return $"{x.ToString(fmt)} {y.ToString(fmt)} {z.ToString(fmt)}";
         }
 
 
@@ -496,6 +494,5 @@ namespace g4
                 b2.z = -n.y;
             }
         }
-
     }
 }

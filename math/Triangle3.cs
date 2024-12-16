@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace g4
+﻿namespace g4
 {
     public struct Triangle3d
     {
@@ -42,6 +37,11 @@ namespace g4
         public Vector3d BarycentricCoords(Vector3d point)
         {
             return MathUtil.BarycentricCoords(point, V0, V1, V2);
+        }
+
+        public Vector3d GetCenter()
+        {
+            return (V0 + V1 + V2) / 3.0f;
         }
 
         // conversion operators
