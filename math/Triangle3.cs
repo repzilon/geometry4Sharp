@@ -39,11 +39,6 @@
             return MathUtil.BarycentricCoords(point, V0, V1, V2);
         }
 
-        public Vector3d GetCenter()
-        {
-            return (V0 + V1 + V2) / 3.0f;
-        }
-
         // conversion operators
         public static implicit operator Triangle3d(Triangle3f v)
         {
