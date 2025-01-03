@@ -1,4 +1,6 @@
-﻿namespace g4
+﻿using System;
+
+namespace g4
 {
     public struct Triangle3d
     {
@@ -37,6 +39,33 @@
         public Vector3d BarycentricCoords(Vector3d point)
         {
             return MathUtil.BarycentricCoords(point, V0, V1, V2);
+        }
+
+        public Vector3d GetCentroid()
+        {
+            return new Vector3d(
+                (V0.x + V1.x + V2.x) / 3.0,
+                (V0.y + V1.y + V2.y) / 3.0,
+                (V0.z + V1.z + V2.z) / 3.0
+            );
+        }
+
+        public bool IsPointInTriangle(Vector3d point, double epsilon = 1e-06)
+        {
+            return IsPointInTriangleBaryCoords(BarycentricCoords(point), epsilon);
+        }
+
+        private static bool IsPointInTriangleBaryCoords(Vector3d baryCoords, double epsilon = 1e-06)
+        {
+            // Check if all barycenter coordinates are between 0 and 1, inclusive
+            var condition1 = baryCoords.x >= -epsilon && baryCoords.x <= 1.0 + epsilon;
+            var condition2 = baryCoords.y >= -epsilon && baryCoords.y <= 1.0 + epsilon;
+            var condition3 = baryCoords.z >= -epsilon && baryCoords.z <= 1.0 + epsilon;
+
+            // Check if the sum of barycenter coordinates is approximately 1
+            var sumIsOne = Math.Abs(baryCoords.x + baryCoords.y + baryCoords.z - 1.0) < epsilon;
+
+            return condition1 && condition2 && condition3 && sumIsOne;
         }
 
         // conversion operators
