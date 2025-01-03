@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace g4.intersection
+namespace g4
 {
     public static class IntrRay3Plane3
     {
