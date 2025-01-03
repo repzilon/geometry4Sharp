@@ -58,6 +58,39 @@ namespace g4
                 return 0;
         }
 
+        /// <summary>
+        /// Finds an arbitrary point on a plane defined by a normal and a constant (ax + by + cz - d = 0).
+        /// </summary>
+        /// <param name="epsilon">Precision.</param>
+        /// <returns>A point that lies on the plane.</returns>
+        public Vector3d GetAnyPoint(double epsilon = 1e-06)
+        {
+            // Extract components of the normal vector
+            var a = Normal.x;
+            var b = Normal.y;
+            var c = Normal.z;
+
+            // Choose arbitrary values for x and y
+            var x = 0.0;
+            var y = 0.0;
+            var z = 0.0;
+
+            // Solve for z using the plane equation
+            if (Math.Abs(c) > epsilon)
+            {
+                z = -(a * x + b * y - Constant) / c;
+            }
+            else if (Math.Abs(b) > epsilon)
+            {
+                y = -(a * x - Constant) / b; // Solve for y if c is zero
+            }
+            else
+            {
+                x = Constant / a; // Solve for x if c and b are zero
+            }
+
+            return new Vector3d(x, y, z);
+        }
     }
 
 
