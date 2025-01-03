@@ -2,7 +2,7 @@
 
 namespace g4.intersection
 {
-    internal static class IntrRay3Plane3
+    public static class IntrRay3Plane3
     {
         /// <summary>
         /// Finds the intersection point between a ray and a plane.
