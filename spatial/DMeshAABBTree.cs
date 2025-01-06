@@ -653,7 +653,7 @@ namespace g4
         /// Returns true if there is *any* intersection between our mesh and 'other' mesh.
         /// TransformF takes vertices of otherTree into our tree - can be null if in same coord space
         /// </summary>
-        public virtual (bool, Triangle3d, Triangle3d) TestIntersectionAndGetTriangles(DMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF = null)
+        public virtual (bool, int, int) TestIntersectionAndGetTriangles(DMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF = null)
         {
             if (mesh_timestamp != mesh.ShapeTimestamp)
                 throw new Exception("DMeshAABBTree3.TestIntersection: mesh has been modified since tree construction");
@@ -661,7 +661,7 @@ namespace g4
             return find_any_intersection_get_triangles(root_index, otherTree, TransformF, otherTree.root_index, 0);
         }
 
-        protected (bool, Triangle3d, Triangle3d) find_any_intersection_get_triangles(int iBox, DMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF, int oBox, int depth)
+        protected (bool, int, int) find_any_intersection_get_triangles(int iBox, DMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF, int oBox, int depth)
         {
             int idx = box_to_index[iBox];
             int odx = otherTree.box_to_index[oBox];
@@ -697,10 +697,10 @@ namespace g4
                             continue;
                         mesh.GetTriVertices(ti, ref tri.V0, ref tri.V1, ref tri.V2);
                         if (IntrTriangle3Triangle3.Intersects(ref otri, ref tri))
-                            return (true, tri, otri);
+                            return (true, ti, tj);
                     }
                 }
-                return (false, new Triangle3d(), new Triangle3d());
+                return (false, -1, -1);
             }
 
             // we either descend "our" tree or the other tree
@@ -735,7 +735,7 @@ namespace g4
                     oChild1 = oChild1 - 1;          // [TODO] could descend one w/ larger overlap volume first??
                     int oChild2 = otherTree.index_list[odx + 1] - 1;
 
-                    var intersects = (false, new Triangle3d(), new Triangle3d());
+                    var intersects = (false, -1, -1);
                     AxisAlignedBox3d oChild1Box = otherTree.get_boxd(oChild1, TransformF);
                     if (oChild1Box.Intersects(bounds))
                         intersects = find_any_intersection_get_triangles(iBox, otherTree, TransformF, oChild1, depth + 1);
@@ -769,7 +769,7 @@ namespace g4
                     iChild1 = iChild1 - 1;          // [TODO] could descend one w/ larger overlap volume first??
                     int iChild2 = index_list[idx + 1] - 1;
 
-                    var intersects = (false, new Triangle3d(), new Triangle3d()); 
+                    var intersects = (false, -1, -1); 
                     if (box_box_intersect(iChild1, ref oBounds))
                         intersects = find_any_intersection_get_triangles(iChild1, otherTree, TransformF, oBox, depth + 1);
                     if (!intersects.Item1 && box_box_intersect(iChild2, ref oBounds))
@@ -778,7 +778,7 @@ namespace g4
                 }
 
             }
-            return (false, new Triangle3d(), new Triangle3d());
+            return (false, -1, -1);
         }
 
 
@@ -804,7 +804,7 @@ namespace g4
         {
             public List<PointIntersection> Points;
             public List<SegmentIntersection> Segments;
-            public List<(Triangle3d, Triangle3d)> TrianglePairs;
+            public List<(int, int)> TrianglePairs;
         }
 
 
@@ -961,7 +961,7 @@ namespace g4
             {
                 Points = new List<PointIntersection>(),
                 Segments = new List<SegmentIntersection>(),
-                TrianglePairs = new List<(Triangle3d, Triangle3d)>()
+                TrianglePairs = new List<(int, int)>()
             };
 
             var intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
@@ -1013,7 +1013,7 @@ namespace g4
                         {
                             if (intr.Find())
                             {
-                                result.TrianglePairs.Add((intr.Triangle0, intr.Triangle1));
+                                result.TrianglePairs.Add((ti, tj));
 
                                 if (intr.Quantity == 1)
                                 {
