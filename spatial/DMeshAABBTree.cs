@@ -667,6 +667,13 @@ namespace g4
             public List<SegmentIntersection> Segments;
         }
 
+        public class IntersectionsAndTrianglesQueryResult
+        {
+            public List<PointIntersection> Points;
+            public List<SegmentIntersection> Segments;
+            public List<(Triangle3d, Triangle3d)> TrianglePairs;
+        }
+
 
         /// <summary>
         /// Compute all intersections between two Meshes. 
@@ -682,7 +689,7 @@ namespace g4
             IntersectionsQueryResult result = new IntersectionsQueryResult();
             result.Points = new List<PointIntersection>();
             result.Segments = new List<SegmentIntersection>();
-
+            
             IntrTriangle3Triangle3 intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
             find_intersections(root_index, otherTree, TransformF, otherTree.root_index, 0, intr, result);
 
@@ -806,6 +813,162 @@ namespace g4
 
 
 
+        /// <summary>
+        /// Compute all intersections between two Meshes. 
+        /// TransformF argument transforms vertices of otherTree to our tree (can be null if in same coord space)
+        /// Returns pairs of intersecting triangles, which could intersect in either point or segment
+        /// Currently *does not* return coplanar intersections.
+        /// </summary>
+        public virtual IntersectionsAndTrianglesQueryResult FindAllIntersectionsAndTriangles(DMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF = null)
+        {
+            if (mesh_timestamp != mesh.ShapeTimestamp)
+                throw new Exception("DMeshAABBTree3.FindIntersections: mesh has been modified since tree construction");
+
+            var result = new IntersectionsAndTrianglesQueryResult
+            {
+                Points = new List<PointIntersection>(),
+                Segments = new List<SegmentIntersection>(),
+                TrianglePairs = new List<(Triangle3d, Triangle3d)>()
+            };
+
+            var intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
+            find_intersections(root_index, otherTree, TransformF, otherTree.root_index, 0, intr, result);
+
+            return result;
+        }
+
+        protected void find_intersections(int iBox, DMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF,
+                                          int oBox, int depth,
+                                          IntrTriangle3Triangle3 intr, IntersectionsAndTrianglesQueryResult result)
+        {
+            int idx = box_to_index[iBox];
+            int odx = otherTree.box_to_index[oBox];
+
+            if (idx < triangles_end && odx < otherTree.triangles_end)
+            {
+                // ok we are at triangles for both trees, do triangle-level testing
+                Triangle3d tri = new Triangle3d(), otri = new Triangle3d();
+                int num_tris = index_list[idx], onum_tris = otherTree.index_list[odx];
+
+                // outer iteration is "other" tris that need to be transformed (more expensive)
+                for (int j = 1; j <= onum_tris; ++j)
+                {
+                    int tj = otherTree.index_list[odx + j];
+                    if (otherTree.TriangleFilterF != null && otherTree.TriangleFilterF(tj) == false)
+                        continue;
+                    otherTree.mesh.GetTriVertices(tj, ref otri.V0, ref otri.V1, ref otri.V2);
+                    if (TransformF != null)
+                    {
+                        otri.V0 = TransformF(otri.V0);
+                        otri.V1 = TransformF(otri.V1);
+                        otri.V2 = TransformF(otri.V2);
+                    }
+                    intr.Triangle0 = otri;
+
+                    // inner iteration over "our" triangles
+                    for (int i = 1; i <= num_tris; ++i)
+                    {
+                        int ti = index_list[idx + i];
+                        if (TriangleFilterF != null && TriangleFilterF(ti) == false)
+                            continue;
+                        mesh.GetTriVertices(ti, ref tri.V0, ref tri.V1, ref tri.V2);
+                        intr.Triangle1 = tri;
+
+                        // [RMS] Test() is much faster than Find() so it makes sense to call it first, as most
+                        // triangles will not intersect (right?)
+                        if (intr.Test())
+                        {
+                            if (intr.Find())
+                            {
+                                result.TrianglePairs.Add((intr.Triangle0, intr.Triangle1));
+
+                                if (intr.Quantity == 1)
+                                {
+                                    result.Points.Add(new PointIntersection()
+                                    { t0 = ti, t1 = tj, point = intr.Points[0] });
+                                }
+                                else if (intr.Quantity == 2)
+                                {
+                                    result.Segments.Add(new SegmentIntersection()
+                                    { t0 = ti, t1 = tj, point0 = intr.Points[0], point1 = intr.Points[1] });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // done these nodes
+                return;
+            }
+
+            // we either descend "our" tree or the other tree
+            //   - if we have hit triangles on "our" tree, we have to descend other
+            //   - if we hit triangles on "other", we have to descend ours
+            //   - otherwise, we alternate at each depth. This produces wider
+            //     branching but is significantly faster (~10x) for both hits and misses
+            bool bDescendOther = (idx < triangles_end || depth % 2 == 0);
+            if (bDescendOther && odx < otherTree.triangles_end)
+                bDescendOther = false;      // can't
+
+            if (bDescendOther)
+            {
+                // ok we hit triangles on our side but we need to still reach triangles on
+                // the other side, so we descend "their" children
+
+                // [TODO] could we do efficient box.intersects(transform(box)) test?
+                //   ( Contains() on each xformed point? )
+                AxisAlignedBox3d bounds = get_boxd(iBox);
+
+                int oChild1 = otherTree.index_list[odx];
+                if (oChild1 < 0)
+                {                 // 1 child, descend if nearer than cur min-dist
+                    oChild1 = (-oChild1) - 1;
+                    AxisAlignedBox3d oChild1Box = otherTree.get_boxd(oChild1, TransformF);
+                    if (oChild1Box.Intersects(bounds))
+                        find_intersections(iBox, otherTree, TransformF, oChild1, depth + 1, intr, result);
+
+                }
+                else
+                {                            // 2 children
+                    oChild1 = oChild1 - 1;
+
+                    AxisAlignedBox3d oChild1Box = otherTree.get_boxd(oChild1, TransformF);
+                    if (oChild1Box.Intersects(bounds))
+                        find_intersections(iBox, otherTree, TransformF, oChild1, depth + 1, intr, result);
+
+                    int oChild2 = otherTree.index_list[odx + 1] - 1;
+                    AxisAlignedBox3d oChild2Box = otherTree.get_boxd(oChild2, TransformF);
+                    if (oChild2Box.Intersects(bounds))
+                        find_intersections(iBox, otherTree, TransformF, oChild2, depth + 1, intr, result);
+                }
+
+            }
+            else
+            {
+                // descend our tree nodes if they intersect w/ current bounds of other tree
+                AxisAlignedBox3d oBounds = otherTree.get_boxd(oBox, TransformF);
+
+                int iChild1 = index_list[idx];
+                if (iChild1 < 0)
+                {                 // 1 child, descend if nearer than cur min-dist
+                    iChild1 = (-iChild1) - 1;
+                    if (box_box_intersect(iChild1, ref oBounds))
+                        find_intersections(iChild1, otherTree, TransformF, oBox, depth + 1, intr, result);
+
+                }
+                else
+                {                            // 2 children
+                    iChild1 = iChild1 - 1;
+                    if (box_box_intersect(iChild1, ref oBounds))
+                        find_intersections(iChild1, otherTree, TransformF, oBox, depth + 1, intr, result);
+
+                    int iChild2 = index_list[idx + 1] - 1;
+                    if (box_box_intersect(iChild2, ref oBounds))
+                        find_intersections(iChild2, otherTree, TransformF, oBox, depth + 1, intr, result);
+                }
+
+            }
+        }
 
 
 
