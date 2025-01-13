@@ -204,6 +204,12 @@ namespace g4
                     Triangle3d triB = default;
                     meshB.GetTriVertices(tri2Index, ref triB.V0, ref triB.V1, ref triB.V2);
 
+                    if (triA.IsDegenerate() ||
+                        triB.IsDegenerate())
+                    {
+                        continue;
+                    }
+
                     var minDirectionalDistance = ComputeMinimumDirectionalDistance(triA, triB, directionNormalized);
 
                     lock (syncObj)

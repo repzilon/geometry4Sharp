@@ -68,6 +68,24 @@ namespace g4
             return condition1 && condition2 && condition3 && sumIsOne;
         }
 
+        public bool IsDegenerate(float epsilon = 1e-4f)
+        {
+            // Check if any two vertices are coincident
+            if (V0.Distance(V1) < epsilon ||
+                V1.Distance(V2) < epsilon ||
+                V0.Distance(V2) < epsilon)
+            {
+                return true;
+            }
+
+            // Check if the vertices are collinear
+            var e1 = V1 - V0;
+            var e2 = V2 - V0;
+
+            // If the cross product is (almost) zero, the points are collinear
+            return e1.Cross(e2).Length <= epsilon;
+        }
+
         // conversion operators
         public static implicit operator Triangle3d(Triangle3f v)
         {
@@ -109,6 +127,24 @@ namespace g4
         public Vector3f BarycentricCoords(Vector3f point)
         {
             return (Vector3f)MathUtil.BarycentricCoords(point, V0, V1, V2);
+        }
+
+        public bool IsDegenerate(float epsilon = 1e-4f)
+        {
+            // Check if any two vertices are coincident
+            if (V0.Distance(V1) < epsilon ||
+                V1.Distance(V2) < epsilon ||
+                V0.Distance(V2) < epsilon)
+            {
+                return true;
+            }
+
+            // Check if the vertices are collinear
+            var e1 = V1 - V0;
+            var e2 = V2 - V0;
+
+            // If the cross product is (almost) zero, the points are collinear
+            return e1.Cross(e2).Length <= epsilon;
         }
     }
 
