@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\geometry4Sharp-LT\geometry4Sharp.csproj" />
+    <ProjectReference Include="..\geometry4Sharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

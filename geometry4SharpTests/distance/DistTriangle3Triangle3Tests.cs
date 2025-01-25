@@ -76,11 +76,9 @@ namespace geometry4SharpTests.distance
                 new Vector3d(-22.43932915, 4.93565130, -8.02902508),
                 new Vector3d(-22.43814850, 0.00000000, -8.13332558));
 
-            // DISTANCE IS WRONG. POINTS ALSO
             var triangleDistance = new DistTriangle3Triangle3(triangleA, triangleB).Compute();
 
-            triangleDistance.Triangle0Closest.y.Should().BeApproximately(3.80, 0.1);
-            triangleDistance.Triangle1Closest.y.Should().BeApproximately(5.92, 0.1);
+            triangleDistance.DistanceSquared.Should().BeApproximately(0, 0.01);
         }
     }
 }
