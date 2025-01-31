@@ -481,6 +481,13 @@ namespace g4
             return (interTri >= 0);
         }
 
+        public virtual bool TestIntersection(AxisAlignedBox3d aabb)
+        {
+            if (mesh_timestamp != mesh.ShapeTimestamp)
+                throw new Exception("DMeshAABBTree3.TestIntersection: mesh has been modified since tree construction");
+
+            return find_any_intersection(root_index, ref aabb);
+        }
 
         protected int find_any_intersection(int iBox, ref Triangle3d triangle, ref AxisAlignedBox3d triBounds)
         {
@@ -519,7 +526,59 @@ namespace g4
             return -1;
         }
 
+        protected bool find_any_intersection(int iBox, ref AxisAlignedBox3d bounds)
+        {
+            int idx = box_to_index[iBox];
+            if (idx < triangles_end) // triange-list case, array is [N t1 t2 ... tN]
+            {
+                Triangle3d box_tri = new Triangle3d();
+                int num_tris = index_list[idx];
+                for (int i = 1; i <= num_tris; ++i)
+                {
+                    int ti = index_list[idx + i];
+                    if (TriangleFilterF != null && !TriangleFilterF(ti))
+                    {
+                        continue;
+                    }
 
+                    mesh.GetTriVertices(ti, ref box_tri.V0, ref box_tri.V1, ref box_tri.V2);
+                    if (bounds.Intersect(ref box_tri))
+                    {
+                        return true;
+                    }
+                }
+            }
+            else
+            {                                // internal node, either 1 or 2 child boxes
+                int iChild1 = index_list[idx];
+                if (iChild1 < 0)
+                {
+                    iChild1 = (-iChild1) - 1;  // 1 child, descend if nearer than cur min-dist
+                    if (box_box_intersect(iChild1, ref bounds))
+                    {
+                        return find_any_intersection(iChild1, ref bounds);
+                    }
+                }
+                else
+                {                            // 2 children, descend closest first
+                    iChild1 = iChild1 - 1;
+                    int iChild2 = index_list[idx + 1] - 1;
+
+                    bool interTri = false;
+
+                    if (box_box_intersect(iChild1, ref bounds))
+                    {
+                        interTri = find_any_intersection(iChild1, ref bounds);
+                    }
+                    if (!interTri && box_box_intersect(iChild2, ref bounds))
+                    {
+                        interTri = find_any_intersection(iChild2, ref bounds);
+                    }
+                    return interTri;
+                }
+            }
+            return false;
+        }
 
 
 

@@ -245,7 +245,79 @@ namespace g4
                 return intersect;
         }
 
+        public bool Intersect(ref Triangle3d triangle)
+        {
+            var v0 = triangle.V0;
+            var v1 = triangle.V1;
+            var v2 = triangle.V2;
 
+            // Translate triangle vertices to AABB space
+            Vector3d boxCenter = (Min + Max) / 2;
+            Vector3d boxHalfSize = (Max - Min) / 2;
+
+            Vector3d tv0 = v0 - boxCenter;
+            Vector3d tv1 = v1 - boxCenter;
+            Vector3d tv2 = v2 - boxCenter;
+
+            // Compute triangle edges
+            Vector3d e0 = tv1 - tv0;
+            Vector3d e1 = tv2 - tv1;
+            Vector3d e2 = tv0 - tv2;
+
+            // Test axes: AABB axes
+            if (!OverlapOnAxis(ref tv0, ref tv1, ref tv2, ref boxHalfSize, new Vector3d(1, 0, 0))) return false;
+            if (!OverlapOnAxis(ref tv0, ref tv1, ref tv2, ref boxHalfSize, new Vector3d(0, 1, 0))) return false;
+            if (!OverlapOnAxis(ref tv0, ref tv1, ref tv2, ref boxHalfSize, new Vector3d(0, 0, 1))) return false;
+
+            // Test axes: Triangle normal
+            Vector3d triangleNormal = e0.Cross(e1);
+            if (!OverlapOnAxis(ref tv0, ref tv1, ref tv2, ref boxHalfSize, triangleNormal)) return false;
+
+            // Test axes: Cross products of edges and AABB axes
+            Vector3d[] testAxes =
+            {
+            e0.Cross(new Vector3f(1, 0, 0)),
+            e0.Cross(new Vector3f(0, 1, 0)),
+            e0.Cross(new Vector3f(0, 0, 1)),
+            e1.Cross(new Vector3f(1, 0, 0)),
+            e1.Cross(new Vector3f(0, 1, 0)),
+            e1.Cross(new Vector3f(0, 0, 1)),
+            e2.Cross(new Vector3f(1, 0, 0)),
+            e2.Cross(new Vector3f(0, 1, 0)),
+            e2.Cross(new Vector3f(0, 0, 1))
+        };
+
+            foreach (var axis in testAxes)
+            {
+                if (!OverlapOnAxis(ref tv0, ref tv1, ref tv2, ref boxHalfSize, axis))
+                    return false;
+            }
+
+            // No separating axis found, triangle intersects the AABB
+            return true;
+        }
+
+        private static bool OverlapOnAxis(ref Vector3d v0, ref Vector3d v1, ref Vector3d v2, ref Vector3d boxHalfSize, Vector3d axis)
+        {
+            if (axis.LengthSquared < 1e-6f) // Ignore degenerate axes
+                return true;
+
+            // Project triangle vertices onto the axis
+            var p0 = v0.Dot(axis);
+            var p1 = v1.Dot(axis);
+            var p2 = v2.Dot(axis);
+
+            var min = Math.Min(p0, Math.Min(p1, p2));
+            var max = Math.Max(p0, Math.Max(p1, p2));
+
+            // Project AABB onto the axis
+            var r = boxHalfSize.x * Math.Abs(axis.x) +
+                      boxHalfSize.y * Math.Abs(axis.y) +
+                      boxHalfSize.z * Math.Abs(axis.z);
+
+            // Check for overlap
+            return !(min > r || max < -r);
+        }
 
         public bool Contains(Vector3d v) {
             return (Min.x <= v.x) && (Min.y <= v.y) && (Min.z <= v.z)
