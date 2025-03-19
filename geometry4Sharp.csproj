@@ -313,6 +313,7 @@
     <Compile Include="spatial\DCurveProjection.cs" />
     <Compile Include="spatial\DenseGrid2.cs" />
     <Compile Include="spatial\DenseGrid3.cs" />
+    <Compile Include="spatial\NTMeshAABBTree.cs" />
     <Compile Include="spatial\EditMeshSpatial.cs" />
     <Compile Include="spatial\MeshScalarSamplingGrid.cs" />
     <Compile Include="spatial\MeshWindingNumberGrid.cs" />

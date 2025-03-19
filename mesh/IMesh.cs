@@ -56,7 +56,10 @@ namespace g4
         void SetVertexNormal(int vid, Vector3f vNewNormal);
     }
 
-
+    public interface IMesh3 : IDeformableMesh
+    {
+        int ShapeTimestamp();
+    }
 
     /*
      * Abstracts construction of meshes, so that we can construct different types, etc
