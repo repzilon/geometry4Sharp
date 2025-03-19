@@ -30,6 +30,21 @@ namespace g4
             });
         }
 
+        public MeshTriInfoCache(NTMesh3 mesh)
+        {
+            int NT = mesh.TriangleCount;
+            Centroids = new DVector<Vector3d>(); Centroids.resize(NT);
+            Normals = new DVector<Vector3d>(); Normals.resize(NT);
+            Areas = new DVector<double>(); Areas.resize(NT);
+            gParallel.ForEach(mesh.TriangleIndices(), (tid) => {
+                Vector3d c, n; double a;
+                mesh.GetTriInfo(tid, out n, out a, out c);
+                Centroids[tid] = c;
+                Normals[tid] = n;
+                Areas[tid] = a;
+            });
+        }
+
         public void GetTriInfo(int tid, ref Vector3d n, ref double a, ref Vector3d c)
         {
             c = Centroids[tid];

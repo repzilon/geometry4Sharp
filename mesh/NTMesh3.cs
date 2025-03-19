@@ -341,6 +341,20 @@ namespace g4
             }
         }
 
+        /// <summary>
+        /// efficiently compute centroid of triangle
+        /// </summary>
+        public Vector3d GetTriCentroid(int tID)
+        {
+            int ai = 3 * triangles[3 * tID],
+                bi = 3 * triangles[3 * tID + 1],
+                ci = 3 * triangles[3 * tID + 2];
+            double f = (1.0 / 3.0);
+            return new Vector3d(
+                (vertices[ai] + vertices[bi] + vertices[ci]) * f,
+                (vertices[ai + 1] + vertices[bi + 1] + vertices[ci + 1]) * f,
+                (vertices[ai + 2] + vertices[bi + 2] + vertices[ci + 2]) * f);
+        }
 
 
         public int GetTriangleGroup(int tID) { 

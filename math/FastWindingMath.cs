@@ -69,6 +69,65 @@ namespace g4
             }
         }
 
+        /// <summary>
+        /// precompute constant coefficients of triangle winding number approximation
+        /// p: 'center' of expansion for triangles (area-weighted centroid avg)
+        /// r: max distance from p to triangles
+        /// order1: first-order vector coeff
+        /// order2: second-order matrix coeff
+        /// triCache: optional precomputed triangle centroid/normal/area
+        /// </summary>
+        public static void ComputeCoeffs(NTMesh3 mesh, IEnumerable<int> triangles, 
+            ref Vector3d p, ref double r, 
+            ref Vector3d order1, ref Matrix3d order2,
+            MeshTriInfoCache triCache = null )
+        {
+            p = Vector3d.Zero;
+            order1 = Vector3d.Zero;
+            order2 = Matrix3d.Zero;
+            r = 0;
+
+            // compute area-weighted centroid of triangles, we use this as the expansion point
+            Vector3d P0 = Vector3d.Zero, P1 = Vector3d.Zero, P2 = Vector3d.Zero;
+            double sum_area = 0;
+            foreach (int tid in triangles) {
+                if (triCache != null) {
+                    double area = triCache.Areas[tid];
+                    sum_area += area;
+                    p += area * triCache.Centroids[tid];
+                } else {
+                    mesh.GetTriVertices(tid, ref P0, ref P1, ref P2);
+                    double area = MathUtil.Area(ref P0, ref P1, ref P2);
+                    sum_area += area;
+                    p += area * ((P0 + P1 + P2) / 3.0);
+                }
+            }
+            p /= sum_area;
+
+            // compute first and second-order coefficients of FWN taylor expansion, as well as
+            // 'radius' value r, which is max dist from any tri vertex to p  
+            Vector3d n = Vector3d.Zero, c = Vector3d.Zero; double a = 0;
+            foreach ( int tid in triangles ) {
+                mesh.GetTriVertices(tid, ref P0, ref P1, ref P2);
+
+                if (triCache == null) {
+                    c = (1.0 / 3.0) * (P0 + P1 + P2);
+                    n = MathUtil.FastNormalArea(ref P0, ref P1, ref P2, out a);
+                } else {
+                    triCache.GetTriInfo(tid, ref n, ref a, ref c);
+                }
+
+                order1 += a * n;
+
+                Vector3d dcp = c - p;
+                order2 += a * new Matrix3d(ref dcp, ref n);
+
+                // this is just for return value...
+                double maxdist = MathUtil.Max(P0.DistanceSquared(ref p), P1.DistanceSquared(ref p), P2.DistanceSquared(ref p));
+                r = Math.Max(r, Math.Sqrt(maxdist));
+            }
+        }
+
 
         /// <summary>
         /// Evaluate first-order FWN approximation at point q, relative to center c
