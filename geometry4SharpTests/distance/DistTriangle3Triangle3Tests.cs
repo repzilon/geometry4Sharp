@@ -1,6 +1,7 @@
 using FluentAssertions;
 
 using g4;
+using Xunit;
 
 namespace geometry4SharpTests.distance
 {
