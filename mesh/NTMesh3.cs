@@ -508,6 +508,15 @@ namespace g4
                 v = v, bHaveC = false, bHaveUV = false, bHaveN = false
             });
         }
+
+        /// <summary>
+        /// copy vertex fromVID from existing source mesh, returns new vid
+        /// </summary>
+        public int AppendVertex(NTMesh3 from, int fromVID)
+        {
+            return AppendVertex(from.GetVertex(fromVID));
+        }
+
         public int AppendVertex(NewVertexInfo info)
         {
             int vid = vertices_refcount.allocate();
