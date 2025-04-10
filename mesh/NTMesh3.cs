@@ -791,7 +791,6 @@ namespace g4
             if (!IsVertex(vID))
                 return MeshResult.Failed_NotAVertex;
 
-            vTriangles.Clear();
             foreach (int eid in vertex_edges.ValueItr(vID)) {
                 foreach (int tid in edge_triangles.ValueItr(eid)) {
                     if (vTriangles.Contains(tid) == false)
@@ -1040,6 +1039,31 @@ namespace g4
                         return false;
             }
             return true;            
+        }
+
+        public bool IsManifold()
+        {
+            for (int i = 0; i < EdgeCount; i++)
+            {
+                if (IsNonManifoldEdge(i))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool HasSelfIntersections()
+        {
+            var tree = new NTMeshAABBTree3(this, true);
+            return tree.FindAllSelfIntersectionsTriangles().TrianglePairs.Count > 0;
+        }
+
+        public int NumberOfComponents()
+        {
+            var meshConnectedComponents = new NTMeshConnectedComponents(this);
+            meshConnectedComponents.FindConnectedT();
+            return meshConnectedComponents.Count;
         }
 
         public bool CachedIsClosed {

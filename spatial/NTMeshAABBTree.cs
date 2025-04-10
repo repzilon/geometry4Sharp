@@ -1159,7 +1159,7 @@ namespace g4
         public virtual IntersectionsTrianglesQueryResult FindAllSelfIntersectionsTriangles(Func<Vector3d, Vector3d> TransformF = null)
         {
             if (mesh_timestamp != mesh.ShapeTimestamp)
-                throw new Exception("DMeshAABBTree3.FindIntersections: mesh has been modified since tree construction");
+                throw new Exception("NTMeshAABBTree3.FindIntersections: mesh has been modified since tree construction");
 
             var result = new IntersectionsTrianglesQueryResult
             {
