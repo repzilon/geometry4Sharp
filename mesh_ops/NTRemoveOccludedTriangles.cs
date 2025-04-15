@@ -37,7 +37,7 @@ namespace gs
 
         public enum CalculationMode
         {
-            //RayParity = 0,
+            RayParity = 0,
             AnalyticWindingNumber = 1,
             FastWindingNumber = 2,
             SimpleOcclusionTest = 3
@@ -109,9 +109,9 @@ namespace gs
 
             Func<Vector3d, bool> isOccludedF = (pt) => {
 
-                //if (InsideMode == CalculationMode.RayParity) {
-                //    return spatial.IsInside(pt);
-                //} else 
+                if (InsideMode == CalculationMode.RayParity) {
+                    return spatial.IsInside(pt);
+                } else 
                 if (InsideMode == CalculationMode.AnalyticWindingNumber) {
                     return spatial.WindingNumber(pt) > WindingIsoValue;
                 } else if (InsideMode == CalculationMode.FastWindingNumber) {
@@ -164,7 +164,7 @@ namespace gs
                     inside = vertices[tri.a] || vertices[tri.b] || vertices[tri.c];
 
                 } else {
-                    Index3i tri = Mesh.GetTriangle(tid);
+                    //Index3i tri = Mesh.GetTriangle(tid);
                     Vector3d n = Mesh.GetTriNormal(tid);
 
                     var c = Mesh.GetTriCentroid(tid);
