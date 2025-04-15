@@ -168,16 +168,16 @@ namespace gs
                     Vector3d n = Mesh.GetTriNormal(tid);
 
                     var c = Mesh.GetTriCentroid(tid);
-                    var c0 = Mesh.GetVertex(tri.a);
-                    var c1 = Mesh.GetVertex(tri.b);
-                    var c2 = Mesh.GetVertex(tri.c);
+                    //var c0 = Mesh.GetVertex(tri.a);
+                    //var c1 = Mesh.GetVertex(tri.b);
+                    //var c2 = Mesh.GetVertex(tri.c);
                     
                     c += n * NormalOffset;
-                    c0 += n * NormalOffset;
-                    c1 += n * NormalOffset;
-                    c2 += n * NormalOffset;
-                    
-                    inside = isOccludedF(c) && isOccludedF(c0) && isOccludedF(c1) && isOccludedF(c2);
+                    //c0 += n * NormalOffset;
+                    //c1 += n * NormalOffset;
+                    //c2 += n * NormalOffset;
+
+                    inside = isOccludedF(c); // || isOccludedF(c0) || isOccludedF(c1) || isOccludedF(c2);
                 }
 
                 if (inside) {
