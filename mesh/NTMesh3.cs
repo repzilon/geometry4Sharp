@@ -802,7 +802,23 @@ namespace g4
         /// <summary>
         /// Returns count of boundary edges at vertex
         /// </summary>
-        public int VtxBoundaryEdges(int vID)
+        public List<int> VtxBoundaryEdges(int vID)
+        {
+            if ( vertices_refcount.isValid(vID) ) {
+                var result = new List<int>();
+                foreach (int eid in vertex_edges.ValueItr(vID)) {
+                    if (edge_triangles.Count(eid) == 1)
+                        result.Add(eid);
+                }
+                return result;
+            }
+            return new List<int>();
+        }
+
+        /// <summary>
+        /// Returns count of boundary edges at vertex
+        /// </summary>
+        public int CountVtxBoundaryEdges(int vID)
         {
             if ( vertices_refcount.isValid(vID) ) {
                 int count = 0;
