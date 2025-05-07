@@ -70,7 +70,25 @@ namespace gs
                     stack.RemoveAt(stack.Count - 1);
                     Index3i tcur = Mesh.GetTriangle(cur);
 
-                    var nbrs = Mesh.TriTrianglesItr(cur).ToList();
+                    var edges = Mesh.GetTriEdges(cur);
+
+                    var nbrs = new List<int>();
+                    if (!Mesh.IsNonManifoldEdge(edges.a))
+                    {
+                        nbrs.AddRange(Mesh.EdgeTrianglesItr(edges.a));
+                    }
+
+                    if (!Mesh.IsNonManifoldEdge(edges.b))
+                    {
+                        nbrs.AddRange(Mesh.EdgeTrianglesItr(edges.b));
+                    }
+
+                    if (!Mesh.IsNonManifoldEdge(edges.c))
+                    {
+                        nbrs.AddRange(Mesh.EdgeTrianglesItr(edges.c));
+                    }
+
+                    //var nbrs = Mesh.TriTrianglesItr(cur).ToList();
                     for (var j = 0; j < nbrs.Count; j++)
                     {
                         var nbr = nbrs[j];

@@ -107,10 +107,10 @@ namespace gs
                 NR = ray_dirs.Count;
             }
 
-            Func<Vector3d, bool> isOccludedF = (pt) => {
+            Func<Vector3d, Vector3d, bool> isOccludedF = (pt, normal) => {
 
                 if (InsideMode == CalculationMode.RayParity) {
-                    return spatial.IsInside(pt);
+                    return spatial.IsInside(pt, normal);
                 } else 
                 if (InsideMode == CalculationMode.AnalyticWindingNumber) {
                     return spatial.WindingNumber(pt) > WindingIsoValue;
@@ -145,7 +145,7 @@ namespace gs
                     Vector3d c = Mesh.GetVertex(vid);
                     Vector3d n = (normals == null) ? Mesh.GetVertexNormal(vid) : normals[vid];
                     c += n * NormalOffset;
-                    vertices[vid] = isOccludedF(c);
+                    vertices[vid] = isOccludedF(c, n);
                 });
             }
             if (Cancelled())
@@ -154,8 +154,10 @@ namespace gs
             RemovedT = new List<int>();
             SpinLock removeLock = new SpinLock();
 
-            gParallel.ForEach(Mesh.TriangleIndices(), (tid) => {
-                if (cancel) return;
+            //gParallel.ForEach(Mesh.TriangleIndices(), (tid) => 
+            foreach (var tid in Mesh.TriangleIndices())
+            {
+                if (cancel) continue;
                 if (tid % 10 == 0) cancel = Cancelled();
 
                 bool inside = false;
@@ -177,7 +179,12 @@ namespace gs
                     //c1 += n * NormalOffset;
                     //c2 += n * NormalOffset;
 
-                    inside = isOccludedF(c); // || isOccludedF(c0) || isOccludedF(c1) || isOccludedF(c2);
+                    if (n.LengthSquared < 0.99)
+                    {
+                        n = new Vector3d(0.331960519038825, 0.462531727525156, 0.822111072077288);
+                    }
+
+                    inside = isOccludedF(c, n); // || isOccludedF(c0) || isOccludedF(c1) || isOccludedF(c2);
                 }
 
                 if (inside) {
@@ -186,7 +193,8 @@ namespace gs
                     RemovedT.Add(tid);
                     removeLock.Exit();
                 }
-            });
+            }
+            //);
 
             if (Cancelled())
                 return false;

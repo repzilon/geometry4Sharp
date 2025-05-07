@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="geometry4SharpTests\mesh_ops\" />
     <Folder Include="Properties\" />
     <None Include="LICENSE" Pack="true" PackagePath="LICENSE.txt" />
   </ItemGroup>

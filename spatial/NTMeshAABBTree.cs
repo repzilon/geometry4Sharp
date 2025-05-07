@@ -1763,6 +1763,29 @@ namespace g4
             return (nHits % 2) != 0;
         }
 
+        /// <summary>
+        /// Returns true if point p is inside this mesh.
+        /// </summary>
+        public virtual bool IsInside(Vector3d p, Vector3d n)
+        {
+            // This is a raycast crossing-count test, which is not ideal!
+            // Only works for closed meshes.
+
+            //AxisAlignedBox3f bounds = get_box(root_index);
+            //Vector3d outside = bounds.Center + 2 * bounds.Diagonal;
+
+            //Vector3d rayDir = Vector3d.AxisX;
+
+            Vector3d rayDir = n.Normalized;
+
+            //Vector3d rayOrigin = p - 2 * bounds.Width * rayDir;
+            Vector3d rayOrigin = p;
+
+            Ray3d ray = new Ray3d(rayOrigin, rayDir);
+            int nHits = FindAllHitTriangles(ray, null);
+
+            return (nHits % 2) != 0;
+        }
 
 
 
