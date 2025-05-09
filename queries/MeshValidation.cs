@@ -92,7 +92,7 @@ namespace g4
 
             return ValidationStatus.Ok;
         }
-        public static ValidationStatus IsBoundaryLoop(NTMesh3 mesh, EdgeLoop loop)
+        public static ValidationStatus IsBoundaryLoop(NTMesh3 mesh, NTEdgeLoop loop)
         {
             int N = loop.Vertices.Length;
 

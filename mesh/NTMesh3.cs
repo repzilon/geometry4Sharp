@@ -487,11 +487,12 @@ namespace g4
         public Index2i GetOrientedBoundaryEdgeV(int eID)
         {
             if ( edges_refcount.isValid(eID) && edge_is_boundary(eID) ) {
-                int ei = 2 * eID;
-                int a = edges[ei], b = edges[ei + 1];
+                var eIndices = GetEdgeV(eID);
+                int a = eIndices.a, b = eIndices.b;
 
                 int ti = edge_triangles.First(eID);
-                Index3i tri = new Index3i(triangles[ti], triangles[ti + 1], triangles[ti + 2]);
+                //Index3i tri = new Index3i(triangles[ti], triangles[ti + 1], triangles[ti + 2]);
+                var tri = GetTriangle(ti);
                 int ai = IndexUtil.find_edge_index_in_tri(a, b, ref tri);
                 return new Index2i(tri[ai], tri[(ai + 1) % 3]);
             }
@@ -966,7 +967,7 @@ namespace g4
         protected bool edge_has_t(int eid, int tid) {
             return edge_triangles.Contains(eid, tid);
         }
-        protected int edge_other_v(int eID, int vID)
+        public int edge_other_v(int eID, int vID)
         {
 			int i = 2*eID;
             int ev0 = edges[i], ev1 = edges[i + 1];
@@ -1033,6 +1034,26 @@ namespace g4
             return InvalidID;
         }
 
+        /// <summary>
+        /// Find triangle made up of any permutation of vertices [a,b,c]
+        /// </summary>
+        public int FindTriangle(int a, int b, int c)
+        {
+            int eid = find_edge(a, b);
+            if (eid == InvalidID)
+                return InvalidID;
+
+            foreach (var tid in EdgeTrianglesItr(eid))
+            {
+                var triVertices = GetTriangle(tid);
+                if (triVertices.a == c || triVertices.b == c || triVertices.c == c)
+                {
+                    return tid;
+                }
+            }
+
+            return InvalidID;
+        }
 
 
         /// <summary>

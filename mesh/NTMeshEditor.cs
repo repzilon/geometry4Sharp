@@ -687,90 +687,107 @@ namespace g4
         //
         // Returns true if submesh successfully inserted, false if any triangles failed
         // (which happens if triangle would result in non-manifold mesh)
-        //public bool ReinsertSubmesh(NTSubmesh3 sub, ref int[] new_tris, out IndexMap SubToNewV,
-        //    DuplicateTriBehavior eDuplicateBehavior = DuplicateTriBehavior.AssertAbort)
-        //{
-        //    if (sub.BaseBorderV == null)
-        //        throw new Exception("MeshEditor.ReinsertSubmesh: Submesh does not have required boundary info. Call ComputeBoundaryInfo()!");
+        public bool ReinsertSubmesh(NTSubmesh3 sub, ref int[] new_tris, out IndexMap SubToNewV,
+            DuplicateTriBehavior eDuplicateBehavior = DuplicateTriBehavior.AssertAbort)
+        {
+            if (sub.BaseBorderV == null)
+                throw new Exception("MeshEditor.ReinsertSubmesh: Submesh does not have required boundary info. Call ComputeBoundaryInfo()!");
 
-        //    NTMesh3 submesh = sub.SubMesh;
-        //    bool bAllOK = true;
+            NTMesh3 submesh = sub.SubMesh;
+            bool bAllOK = true;
 
-        //    IndexFlagSet done_v = new IndexFlagSet(submesh.MaxVertexID, submesh.TriangleCount/2);
-        //    SubToNewV = new IndexMap(submesh.MaxVertexID, submesh.VertexCount);
+            IndexFlagSet done_v = new IndexFlagSet(submesh.MaxVertexID, submesh.TriangleCount / 2);
+            SubToNewV = new IndexMap(submesh.MaxVertexID, submesh.VertexCount);
 
-        //    int nti = 0;
-        //    int NT = submesh.MaxTriangleID;
-        //    for (int ti = 0; ti < NT; ++ti ) {
-        //        if (submesh.IsTriangle(ti) == false)
-        //            continue;
+            int nti = 0;
+            int NT = submesh.MaxTriangleID;
+            for (int ti = 0; ti < NT; ++ti)
+            {
+                if (submesh.IsTriangle(ti) == false)
+                    continue;
 
-        //        Index3i sub_t = submesh.GetTriangle(ti);
-        //        int gid = submesh.GetTriangleGroup(ti);
+                Index3i sub_t = submesh.GetTriangle(ti);
+                int gid = submesh.GetTriangleGroup(ti);
 
-        //        Index3i new_t = Index3i.Zero;
-        //        for ( int j = 0; j < 3; ++j ) {
-        //            int sub_v = sub_t[j];
-        //            int new_v = -1;
-        //            if (done_v[sub_v] == false) {
+                Index3i new_t = Index3i.Zero;
+                for (int j = 0; j < 3; ++j)
+                {
+                    int sub_v = sub_t[j];
+                    int new_v = -1;
+                    if (done_v[sub_v] == false)
+                    {
 
-        //                // first check if this is a boundary vtx on submesh and maps to a bdry vtx on base mesh
-        //                if (submesh.IsBoundaryVertex(sub_v)) {
-        //                    int base_v = (sub_v < sub.SubToBaseV.size) ? sub.SubToBaseV[sub_v] : -1;
-        //                    if ( base_v >= 0 && Mesh.IsVertex(base_v) && sub.BaseBorderV[base_v] == true ) { 
-        //                        // [RMS] this should always be true, but assert in tests to find out
-        //                        Debug.Assert(Mesh.IsBoundaryVertex(base_v));
-        //                        if (Mesh.IsBoundaryVertex(base_v)) {
-        //                            new_v = base_v;
-        //                        }
-        //                    }
-        //                }
+                        // first check if this is a boundary vtx on submesh and maps to a bdry vtx on base mesh
+                        if (submesh.IsBoundaryVertex(sub_v))
+                        {
+                            int base_v = (sub_v < sub.SubToBaseV.size) ? sub.SubToBaseV[sub_v] : -1;
+                            if (base_v >= 0 && Mesh.IsVertex(base_v) && sub.BaseBorderV[base_v] == true)
+                            {
+                                // [RMS] this should always be true, but assert in tests to find out
+                                Debug.Assert(Mesh.IsBoundaryVertex(base_v));
+                                if (Mesh.IsBoundaryVertex(base_v))
+                                {
+                                    new_v = base_v;
+                                }
+                            }
+                        }
 
-        //                // if that didn't happen, append new vtx
-        //                if ( new_v == -1 ) {
-        //                    new_v = Mesh.AppendVertex(submesh, sub_v);
-        //                }
+                        // if that didn't happen, append new vtx
+                        if (new_v == -1)
+                        {
+                            new_v = Mesh.AppendVertex(submesh, sub_v);
+                        }
 
-        //                SubToNewV[sub_v] = new_v;
-        //                done_v[sub_v] = true;
+                        SubToNewV[sub_v] = new_v;
+                        done_v[sub_v] = true;
 
-        //            } else 
-        //                new_v = SubToNewV[sub_v];
+                    }
+                    else
+                        new_v = SubToNewV[sub_v];
 
-        //            new_t[j] = new_v;
-        //        }
+                    new_t[j] = new_v;
+                }
 
-        //        // try to handle duplicate-tri case
-        //        if (eDuplicateBehavior == DuplicateTriBehavior.AssertContinue) {
-        //            Debug.Assert(Mesh.FindTriangle(new_t.a, new_t.b, new_t.c) == DMesh3.InvalidID);
-        //        } else {
-        //            int existing_tid = Mesh.FindTriangle(new_t.a, new_t.b, new_t.c);
-        //            if (existing_tid != DMesh3.InvalidID) {
-        //                if (eDuplicateBehavior == DuplicateTriBehavior.AssertAbort) {
-        //                    Debug.Assert(existing_tid == DMesh3.InvalidID);
-        //                    return false;
-        //                } else if (eDuplicateBehavior == DuplicateTriBehavior.UseExisting) {
-        //                    if (new_tris != null)
-        //                        new_tris[nti++] = existing_tid;
-        //                    continue;
-        //                } else if (eDuplicateBehavior == DuplicateTriBehavior.Replace) {
-        //                    Mesh.RemoveTriangle(existing_tid, false);
-        //                }
-        //            }
-        //        }
+                // try to handle duplicate-tri case
+                if (eDuplicateBehavior == DuplicateTriBehavior.AssertContinue)
+                {
+                    Debug.Assert(Mesh.FindTriangle(new_t.a, new_t.b, new_t.c) == DMesh3.InvalidID);
+                }
+                else
+                {
+                    int existing_tid = Mesh.FindTriangle(new_t.a, new_t.b, new_t.c);
+                    if (existing_tid != DMesh3.InvalidID)
+                    {
+                        if (eDuplicateBehavior == DuplicateTriBehavior.AssertAbort)
+                        {
+                            Debug.Assert(existing_tid == DMesh3.InvalidID);
+                            return false;
+                        }
+                        else if (eDuplicateBehavior == DuplicateTriBehavior.UseExisting)
+                        {
+                            if (new_tris != null)
+                                new_tris[nti++] = existing_tid;
+                            continue;
+                        }
+                        else if (eDuplicateBehavior == DuplicateTriBehavior.Replace)
+                        {
+                            Mesh.RemoveTriangle(existing_tid, false);
+                        }
+                    }
+                }
 
 
-        //        int new_tid = Mesh.AppendTriangle(new_t, gid);
-        //        Debug.Assert(new_tid != DMesh3.InvalidID && new_tid != DMesh3.NonManifoldID);
-        //        if ( ! Mesh.IsTriangle(new_tid) )
-        //            bAllOK = false;
+                int new_tid = Mesh.AppendTriangle(new_t, gid);
+                Debug.Assert(new_tid != DMesh3.InvalidID && new_tid != DMesh3.NonManifoldID);
+                if (!Mesh.IsTriangle(new_tid))
+                    bAllOK = false;
 
-        //        if (new_tris != null)
-        //            new_tris[nti++] = new_tid;
-        //    }
+                if (new_tris != null)
+                    new_tris[nti++] = new_tid;
+            }
 
-        //    return bAllOK;
-        //}
+            return bAllOK;
+        }
 
 
 
