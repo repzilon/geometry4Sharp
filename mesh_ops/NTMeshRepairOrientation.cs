@@ -23,10 +23,9 @@ namespace gs
             }
         }
 
-        public NTMeshRepairOrientation(NTMesh3 mesh3, NTMeshAABBTree3 spatial = null)
+        public NTMeshRepairOrientation(NTMesh3 mesh3)
         {
             Mesh = mesh3;
-            this.spatial = spatial;
         }
 
 
@@ -46,7 +45,6 @@ namespace gs
         //  - after orienting components, try to find adjacent open components and
         //    transfer orientation between them
         //  - orient via nesting
-
 
         public void OrientComponents()
         {
@@ -88,21 +86,25 @@ namespace gs
                         nbrs.AddRange(Mesh.EdgeTrianglesItr(edges.c));
                     }
 
-                    //var nbrs = Mesh.TriTrianglesItr(cur).ToList();
                     for (var j = 0; j < nbrs.Count; j++)
                     {
                         var nbr = nbrs[j];
                         if (remaining.Contains(nbr) == false)
                             continue;
 
-                        int a = tcur[j];
-                        int b = tcur[(j + 1) % 3];
+                        int aVtx = tcur[0];
+                        int bVtx = tcur[1];
+                        int cVtx = tcur[2];
+
 
                         Index3i tnbr = Mesh.GetTriangle(nbr);
-                        if (IndexUtil.find_tri_ordered_edge(b, a, ref tnbr) == DMesh3.InvalidID)
+                        if (IndexUtil.find_tri_ordered_edge(bVtx, aVtx, ref tnbr) == DMesh3.InvalidID &&
+                            IndexUtil.find_tri_ordered_edge(cVtx, bVtx, ref tnbr) == DMesh3.InvalidID &&
+                            IndexUtil.find_tri_ordered_edge(aVtx, cVtx, ref tnbr) == DMesh3.InvalidID)
                         {
                             Mesh.ReverseTriOrientation(nbr);
                         }
+
                         stack.Add(nbr);
                         remaining.Remove(nbr);
                         c.triangles.Add(nbr);
@@ -198,8 +200,5 @@ namespace gs
                 }
             }
         }
-
-
-
     }
 }
