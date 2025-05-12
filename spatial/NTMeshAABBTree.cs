@@ -1199,13 +1199,9 @@ namespace g4
                         otri.V2 = TransformF(otri.V2);
                     }
                     intr.Triangle0 = otri;
-                    var vertices = mesh.GetTriangle(tj);
                     var edges = mesh.GetTriEdges(tj);
 
                     var neighboringTriangles = new List<int>();
-                    //mesh.GetVtxTriangles(vertices.a, neighboringTriangles);
-                    //mesh.GetVtxTriangles(vertices.b, neighboringTriangles);
-                    //mesh.GetVtxTriangles(vertices.c, neighboringTriangles);
                     neighboringTriangles.AddRange(mesh.EdgeTrianglesItr(edges.a));
                     neighboringTriangles.AddRange(mesh.EdgeTrianglesItr(edges.b));
                     neighboringTriangles.AddRange(mesh.EdgeTrianglesItr(edges.c));
@@ -1217,7 +1213,6 @@ namespace g4
                         int ti = index_list[idx + i];
 
                         // Checks if it is the same triangle, or if they are neighbors
-                        //if (ti == tj || ti == neighbors.a || ti == neighbors.b || ti == neighbors.c)
                         if (neighboringTriangles.Contains(ti))
                             continue;
 

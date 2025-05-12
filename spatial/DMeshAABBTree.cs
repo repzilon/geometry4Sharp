@@ -1103,12 +1103,12 @@ namespace g4
                         otri.V2 = TransformF(otri.V2);
                     }
                     intr.Triangle0 = otri;
-                    var vertices = mesh.GetTriangle(tj);
+                    var edges = mesh.GetTriEdges(tj);
+                    var trisA = mesh.GetEdgeT(edges.a);
+                    var trisB = mesh.GetEdgeT(edges.b);
+                    var trisC = mesh.GetEdgeT(edges.c);
 
-                    var neighboringTriangles = new List<int>();
-                    mesh.GetVtxTriangles(vertices.a, neighboringTriangles, false);
-                    mesh.GetVtxTriangles(vertices.b, neighboringTriangles, false);
-                    mesh.GetVtxTriangles(vertices.c, neighboringTriangles, false);
+                    var neighboringTriangles = new List<int> { trisA.a, trisA.b, trisB.a, trisB.b, trisC.a, trisC.b };
                     neighboringTriangles = neighboringTriangles.Distinct().ToList();
 
                     // inner iteration over "our" triangles
@@ -1117,7 +1117,6 @@ namespace g4
                         int ti = index_list[idx + i];
 
                         // Checks if it is the same triangle, or if they are neighbors
-                        //if (ti == tj || ti == neighbors.a || ti == neighbors.b || ti == neighbors.c)
                         if (neighboringTriangles.Contains(ti))
                             continue;
 
@@ -1129,7 +1128,7 @@ namespace g4
 
                         // [RMS] Test() is much faster than Find() so it makes sense to call it first, as most
                         // triangles will not intersect (right?)
-                        if (intr.Test())
+                        if (intr.Find() && intr.Type != IntersectionType.Point)
                         {
                             result.TrianglePairs.Add((ti, tj));
                         }

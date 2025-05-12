@@ -74,19 +74,6 @@ namespace gs
         public virtual bool Apply()
         {
             var testAgainstMesh = Mesh;
-            //if (InsideMode == CalculationMode.RayParity) {
-            //    MeshBoundaryLoops loops = new MeshBoundaryLoops(testAgainstMesh);
-            //    if (loops.Count > 0) {
-            //        testAgainstMesh = new NTMesh3(Mesh);
-            //        foreach (var loop in loops) {
-            //            if (Cancelled())
-            //                return false;
-            //            SimpleHoleFiller filler = new SimpleHoleFiller(testAgainstMesh, loop);
-            //            filler.Fill();
-            //        }
-            //    }
-            //}
-
             NTMeshAABBTree3 spatial = (Spatial != null && testAgainstMesh == Mesh) ? 
                 Spatial : new NTMeshAABBTree3(testAgainstMesh, true);
             if (InsideMode == CalculationMode.AnalyticWindingNumber)
@@ -154,47 +141,41 @@ namespace gs
             RemovedT = new List<int>();
             SpinLock removeLock = new SpinLock();
 
-            //gParallel.ForEach(Mesh.TriangleIndices(), (tid) => 
-            foreach (var tid in Mesh.TriangleIndices())
+            gParallel.ForEach(Mesh.TriangleIndices(), (tid) =>
             {
-                if (cancel) continue;
+                if (cancel) return;
                 if (tid % 10 == 0) cancel = Cancelled();
 
                 bool inside = false;
-                if (PerVertex) {
+                if (PerVertex)
+                {
                     Index3i tri = Mesh.GetTriangle(tid);
                     inside = vertices[tri.a] || vertices[tri.b] || vertices[tri.c];
 
-                } else {
-                    //Index3i tri = Mesh.GetTriangle(tid);
+                }
+                else
+                {
                     Vector3d n = Mesh.GetTriNormal(tid);
-
                     var c = Mesh.GetTriCentroid(tid);
-                    //var c0 = Mesh.GetVertex(tri.a);
-                    //var c1 = Mesh.GetVertex(tri.b);
-                    //var c2 = Mesh.GetVertex(tri.c);
-                    
-                    c += n * NormalOffset;
-                    //c0 += n * NormalOffset;
-                    //c1 += n * NormalOffset;
-                    //c2 += n * NormalOffset;
+
 
                     if (n.LengthSquared < 0.99)
                     {
                         n = new Vector3d(0.331960519038825, 0.462531727525156, 0.822111072077288);
                     }
 
-                    inside = isOccludedF(c, n); // || isOccludedF(c0) || isOccludedF(c1) || isOccludedF(c2);
+                    c += n * NormalOffset;
+                    inside = isOccludedF(c, n);
                 }
 
-                if (inside) {
+                if (inside)
+                {
                     bool taken = false;
                     removeLock.Enter(ref taken);
                     RemovedT.Add(tid);
                     removeLock.Exit();
                 }
-            }
-            //);
+            });
 
             if (Cancelled())
                 return false;
@@ -208,8 +189,5 @@ namespace gs
 
             return true;
 		}
-
-
-        
 	}
 }

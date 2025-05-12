@@ -219,10 +219,6 @@ namespace g4
                             int num_be = Mesh.VtxAllBoundaryEdges(cure_b, all_e);
                             num_be = BufferUtil.CountValid(all_e, EdgeFilterF, num_be);
                         }
-						//} else {
-						//	if (EdgeFilterF(e0) == false) bdry_nbrs--;
-						//	if (EdgeFilterF(e1) == false) bdry_nbrs--;
-						//}
 					}
 
 
