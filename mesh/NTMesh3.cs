@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -482,6 +480,22 @@ namespace g4
             return edge_triangles.Count(eID);
         }
 
+        public Vector3d GetEdgePoint(int eID, double t)
+        {
+            if (edges_refcount.isValid(eID))
+            {
+                int iv0 = 3 * edges[2 * eID];
+                int iv1 = 3 * edges[2 * eID + 1];
+                double mt = 1.0 - t;
+                return new Vector3d(
+                    mt * vertices[iv0] + t * vertices[iv1],
+                    mt * vertices[iv0 + 1] + t * vertices[iv1 + 1],
+                    mt * vertices[iv0 + 2] + t * vertices[iv1 + 2]);
+            }
+            Util.gDevAssert(false);
+            return Vector3d.Zero;
+        }
+
 
         // return same indices as GetEdgeV, but oriented based on attached triangle
         public Index2i GetOrientedBoundaryEdgeV(int eID)
@@ -642,7 +656,7 @@ namespace g4
             }
 
             if (vertices_refcount.refCount(vID) != 1)
-                throw new NotImplementedException("DMesh3.RemoveVertex: vertex is still referenced");
+                throw new NotImplementedException("NTMesh3.RemoveVertex: vertex is still referenced");
 
             vertices_refcount.decrement(vID);
             Debug.Assert(vertices_refcount.isValid(vID) == false);
@@ -1611,21 +1625,21 @@ namespace g4
         public void debug_check_is_vertex(int v)
         {
             if (!IsVertex(v))
-                throw new Exception("DMesh3.debug_is_vertex - not a vertex!");
+                throw new Exception("NTMesh3.debug_is_vertex - not a vertex!");
         }
 
         [Conditional("DEBUG")]
         public void debug_check_is_triangle(int t)
         {
             if (!IsTriangle(t))
-                throw new Exception("DMesh3.debug_is_triangle - not a triangle!");
+                throw new Exception("NTMesh3.debug_is_triangle - not a triangle!");
         }
 
         [Conditional("DEBUG")]
         public void debug_check_is_edge(int e)
         {
             if (!IsEdge(e))
-                throw new Exception("DMesh3.debug_is_edge - not an edge!");
+                throw new Exception("NTMesh3.debug_is_edge - not an edge!");
         }
 
 
@@ -1645,7 +1659,7 @@ namespace g4
             } else if (eFailMode == FailMode.gDevAssert) {
                 CheckOrFailF = (b) => { Util.gDevAssert(b); is_ok = is_ok && b; };
             } else if (eFailMode == FailMode.Throw) {
-                CheckOrFailF = (b) => { if (b == false) throw new Exception("DMesh3.CheckValidity: check failed"); };
+                CheckOrFailF = (b) => { if (b == false) throw new Exception("NTMesh3.CheckValidity: check failed"); };
             }
 
             if (normals != null)
@@ -1966,6 +1980,375 @@ namespace g4
             updateTimeStamp(true);
             return MeshResult.Ok;
         }
+
+
+        void set_edge_triangles(int eID, int t0, int t1)
+        {
+            edge_triangles.Clear(eID);
+            edge_triangles.Insert(eID, t0);
+            edge_triangles.Insert(eID, t1);
+        }
+
+
+        public struct MergeEdgesInfo
+        {
+            public int eKept;
+            public int eRemoved;
+
+            public Vector2i vKept;
+            public Vector2i vRemoved;           // either may be InvalidID if it was same as vKept
+
+            public Vector2i eRemovedExtra;      // bonus collapsed edge, or InvalidID
+            public Vector2i eKeptExtra;         // edge paired w/ eRemovedExtra
+        }
+        public MeshResult MergeEdges(int eKeep, int eDiscard, out MergeEdgesInfo merge_info)
+        {
+            merge_info = new MergeEdgesInfo();
+            if (IsEdge(eKeep) == false || IsEdge(eDiscard) == false)
+                return MeshResult.Failed_NotAnEdge;
+
+            var edgevtx_keep = GetEdgeV(eKeep);
+            var edgevtx_discard = GetEdgeV(eDiscard);
+
+            var edgetris_keep = EdgeTrianglesItr(eKeep);
+            var edgetris_discard = EdgeTrianglesItr(eDiscard);
+
+            if (edgetris_keep.Count() != 1 || edgetris_discard.Count() != 1)
+                return MeshResult.Failed_NotABoundaryEdge;
+
+            int a = edgevtx_keep.a, b = edgevtx_keep.b;
+            int tab = edgetris_keep.First();
+            int eab = eKeep;
+            int c = edgevtx_discard.a, d = edgevtx_discard.b;
+            int tcd = edgetris_discard.First();
+            int ecd = eDiscard;
+
+            // Need to correctly orient a,b and c,d and then check that 
+            // we will not join triangles with incompatible winding order
+            // I can't see how to do this purely topologically. 
+            // So relying on closest-pairs testing.
+            IndexUtil.orient_tri_edge(ref a, ref b, GetTriangle(tab));
+            //int tcd_otherv = IndexUtil.orient_tri_edge_and_find_other_vtx(ref c, ref d, GetTriangle(tcd));
+            IndexUtil.orient_tri_edge(ref c, ref d, GetTriangle(tcd));
+
+            // [GT] Another check explicitly calculating the orientation
+            // of the edges to increase robustness
+            //Vector3d vecAB = (GetVertex(b) - GetVertex(a)).Normalized;
+            //Vector3d vecCD = (GetVertex(d) - GetVertex(c)).Normalized;
+            //if (vecAB.Dot(vecCD) > 0)
+            //    return MeshResult.Failed_SameOrientation;
+
+            int x = c; c = d; d = x;   // joinable bdry edges have opposing orientations, so flip to get ac and b/d correspondences
+            Vector3d Va = GetVertex(a), Vb = GetVertex(b), Vc = GetVertex(c), Vd = GetVertex(d);
+            if ((Va.DistanceSquared(Vc) + Vb.DistanceSquared(Vd)) >
+                (Va.DistanceSquared(Vd) + Vb.DistanceSquared(Vc)))
+                return MeshResult.Failed_SameOrientation;
+
+            // alternative that detects normal flip of triangle tcd. This is a more 
+            // robust geometric test, but fails if tri is degenerate...also more expensive
+            //int tcd_otherv = IndexUtil.find_tri_other_vtx(c, d, triangles, tcd);
+            //Vector3d otherv = GetVertex(tcd_otherv);
+            //Vector3d Ncd = MathUtil.FastNormalDirection(ref Vc, ref Vd, ref otherv);
+            //Vector3d Nab = MathUtil.FastNormalDirection(ref Va, ref Vb, ref otherv);
+            //if (Ncd.Dot(Nab) < 0)
+            //    return MeshResult.Failed_SameOrientation;
+
+            merge_info.eKept = eab;
+            merge_info.eRemoved = ecd;
+
+            // if a/c or b/d are connected by an existing edge, we can't merge
+            if (a != c && find_edge(a, c) != NTMesh3.InvalidID)
+                return MeshResult.Failed_InvalidNeighbourhood;
+            if (b != d && find_edge(b, d) != NTMesh3.InvalidID)
+                return MeshResult.Failed_InvalidNeighbourhood;
+
+            // if vertices at either end already share a common neighbour vertex, and we 
+            // do the merge, that would create duplicate edges. This is something like the
+            // 'link condition' in edge collapses. 
+            // Note that we have to catch cases where both edges to the shared vertex are
+            // boundary edges, in that case we will also merge this edge later on
+            if (a != c)
+            {
+                int ea = 0, ec = 0, other_v = (b == d) ? b : -1;
+                foreach (int cnbr in VtxVerticesItr(c))
+                {
+                    if (cnbr != other_v && (ea = find_edge(a, cnbr)) != NTMesh3.InvalidID)
+                    {
+                        ec = find_edge(c, cnbr);
+                        if (IsBoundaryEdge(ea) == false || IsBoundaryEdge(ec) == false)
+                            return MeshResult.Failed_InvalidNeighbourhood;
+                    }
+                }
+            }
+            if (b != d)
+            {
+                int eb = 0, ed = 0, other_v = (a == c) ? a : -1;
+                foreach (int dnbr in VtxVerticesItr(d))
+                {
+                    if (dnbr != other_v && (eb = find_edge(b, dnbr)) != NTMesh3.InvalidID)
+                    {
+                        ed = find_edge(d, dnbr);
+                        if (IsBoundaryEdge(eb) == false || IsBoundaryEdge(ed) == false)
+                            return MeshResult.Failed_InvalidNeighbourhood;
+                    }
+                }
+            }
+
+
+            // [TODO] this acts on each interior tri twice. could avoid using vtx-tri iterator?
+            if (a != c)
+            {
+                // replace c w/ a in edges and tris connected to c, and move edges to a
+                foreach (int eid in vertex_edges.ValueItr(c))
+                {
+                    if (eid == eDiscard)
+                        continue;
+                    
+                    replace_edge_vertex(eid, c, a);
+                    short rc = 0;
+
+                    var eid_tris = EdgeTrianglesItr(eid);
+                    foreach (var eid_t in eid_tris)
+                    {
+                        if (replace_tri_vertex(eid_t, c, a) >= 0)
+                            rc++;
+                    }
+
+                    //if (replace_tri_vertex(edges[4 * eid + 2], c, a) >= 0)
+                    //    rc++;
+                    //if (edges[4 * eid + 3] != InvalidID)
+                    //{
+                    //    if (replace_tri_vertex(edges[4 * eid + 3], c, a) >= 0)
+                    //        rc++;
+                    //}
+                    vertex_edges.Insert(a, eid);
+                    if (rc > 0)
+                    {
+                        vertices_refcount.increment(a, rc);
+                        vertices_refcount.decrement(c, rc);
+                    }
+                }
+                vertex_edges.Clear(c);
+                vertices_refcount.decrement(c);
+                merge_info.vRemoved[0] = c;
+            }
+            else
+            {
+                vertex_edges.Remove(a, ecd);
+                merge_info.vRemoved[0] = InvalidID;
+            }
+            merge_info.vKept[0] = a;
+
+            if (d != b)
+            {
+                // replace d w/ b in edges and tris connected to d, and move edges to b
+                foreach (int eid in vertex_edges.ValueItr(d))
+                {
+                    if (eid == eDiscard)
+                        continue;
+                    replace_edge_vertex(eid, d, b);
+                    short rc = 0;
+                    var eid_tris = EdgeTrianglesItr(eid);
+                    foreach (var eid_t in eid_tris)
+                    {
+                        if (replace_tri_vertex(eid_t, d, b) >= 0)
+                            rc++;
+                    }
+
+                    //if (replace_tri_vertex(edges[4 * eid + 2], d, b) >= 0)
+                    //    rc++;
+                    //if (edges[4 * eid + 3] != InvalidID)
+                    //{
+                    //    if (replace_tri_vertex(edges[4 * eid + 3], d, b) >= 0)
+                    //        rc++;
+                    //}
+
+                    vertex_edges.Insert(b, eid);
+                    if (rc > 0)
+                    {
+                        vertices_refcount.increment(b, rc);
+                        vertices_refcount.decrement(d, rc);
+                    }
+
+                }
+                vertex_edges.Clear(d);
+                vertices_refcount.decrement(d);
+                merge_info.vRemoved[1] = d;
+            }
+            else
+            {
+                vertex_edges.Remove(b, ecd);
+                merge_info.vRemoved[1] = InvalidID;
+            }
+            merge_info.vKept[1] = b;
+
+            // replace edge cd with edge ab in triangle tcd
+            replace_triangle_edge(tcd, ecd, eab);
+            edges_refcount.decrement(ecd);
+
+            // update edge-tri adjacency
+            set_edge_triangles(eab, tab, tcd);
+
+            // Once we merge ab to cd, there may be additional edges (now) connected
+            // to either a or b that are connected to the same vertex on their 'other' side.
+            // So we now have two boundary edges connecting the same two vertices - disaster!
+            // We need to find and merge these edges. 
+            // Q: I don't think it is possible to have multiple such edge-pairs at a or b
+            //    But I am not certain...is a bit tricky to handle because we modify edges_v...
+            merge_info.eRemovedExtra = new Vector2i(InvalidID, InvalidID);
+            merge_info.eKeptExtra = merge_info.eRemovedExtra;
+            for (int vi = 0; vi < 2; ++vi)
+            {
+                int v1 = a, v2 = c;   // vertices of merged edge
+                if (vi == 1)
+                {
+                    v1 = b; v2 = d;
+                }
+                if (v1 == v2)
+                    continue;
+                List<int> edges_v = vertex_edges_list(v1);
+                int Nedges = edges_v.Count;
+                bool found = false;
+                // in this loop, we compare 'other' vert_1 and vert_2 of edges around v1.
+                // problem case is when vert_1 == vert_2  (ie two edges w/ same other vtx).
+                //restart_merge_loop:
+                for (int i = 0; i < Nedges && found == false; ++i)
+                {
+                    int edge_1 = edges_v[i];
+                    if (IsBoundaryEdge(edge_1) == false)
+                        continue;
+                    int vert_1 = edge_other_v(edge_1, v1);
+                    for (int j = i + 1; j < Nedges; ++j)
+                    {
+                        int edge_2 = edges_v[j];
+                        int vert_2 = edge_other_v(edge_2, v1);
+                        if (vert_1 == vert_2 && IsBoundaryEdge(edge_2))
+                        { // if ! boundary here, we are in deep trouble...
+                          // replace edge_2 w/ edge_1 in tri, update edge and vtx-edge-nbr lists
+                            int tri_1 = EdgeTrianglesItr(edge_1).First(); //  edges[4 * edge_1 + 2];
+                            int tri_2 = EdgeTrianglesItr(edge_2).First(); // edges[4 * edge_2 + 2];
+                            replace_triangle_edge(tri_2, edge_2, edge_1);
+                            set_edge_triangles(edge_1, tri_1, tri_2);
+                            vertex_edges.Remove(v1, edge_2);
+                            vertex_edges.Remove(vert_1, edge_2);
+                            edges_refcount.decrement(edge_2);
+                            merge_info.eRemovedExtra[vi] = edge_2;
+                            merge_info.eKeptExtra[vi] = edge_1;
+
+                            //edges_v = vertex_edges_list(v1);      // this code allows us to continue checking, ie in case we had
+                            //Nedges = edges_v.Count;               // multiple such edges. but I don't think it's possible.
+                            //goto restart_merge_loop;
+                            found = true;			  // exit outer i loop
+                            break;					  // exit inner j loop
+                        }
+                    }
+                }
+            }
+
+            updateTimeStamp(true);
+            return MeshResult.Ok;
+        }
+
+        public struct EdgeFlipInfo
+        {
+            public int eID;
+            public int v0, v1;
+            public int ov0, ov1;
+            public int t0, t1;
+        }
+        public MeshResult FlipEdge(int vA, int vB, out EdgeFlipInfo flip)
+        {
+            int eid = find_edge(vA, vB);
+            if (eid == InvalidID)
+            {
+                flip = new EdgeFlipInfo();
+                return MeshResult.Failed_NotAnEdge;
+            }
+            return FlipEdge(eid, out flip);
+        }
+        public MeshResult FlipEdge(int eab, out EdgeFlipInfo flip)
+        {
+            flip = new EdgeFlipInfo();
+            if (!IsEdge(eab))
+                return MeshResult.Failed_NotAnEdge;
+            if (IsBoundaryEdge(eab))
+                return MeshResult.Failed_IsBoundaryEdge;
+
+            // [GT] TODO: implement for non-manifold edges
+            var edgeTris = EdgeTrianglesItr(eab);
+            if (edgeTris.Count() > 2)
+                return MeshResult.Failed_InvalidNeighbourhood;
+
+            // find oriented edge [a,b], tris t0,t1, and other verts c in t0, d in t1
+            var edgeVtx = GetEdgeV(eab);
+            int a = edgeVtx.a, b = edgeVtx.b;
+
+            int t0 = edgeTris.First();
+            int t1 = edgeTris.Last();
+            int[] T0tv = GetTriangle(t0).array;
+            int[] T1tv = GetTriangle(t1).array;
+            int c = IndexUtil.orient_tri_edge_and_find_other_vtx(ref a, ref b, T0tv);
+            int d = IndexUtil.find_tri_other_vtx(a, b, T1tv);
+            if (c == InvalidID || d == InvalidID)
+            {
+                return MeshResult.Failed_BrokenTopology;
+            }
+
+            int flipped = find_edge(c, d);
+            if (flipped != InvalidID)
+                return MeshResult.Failed_FlippedEdgeExists;
+
+            // find edges bc, ca, ad, db
+            int ebc = find_tri_neighbour_edge(t0, b, c);
+            int eca = find_tri_neighbour_edge(t0, c, a);
+            int ead = find_tri_neighbour_edge(t1, a, d);
+            int edb = find_tri_neighbour_edge(t1, d, b);
+
+            // update triangles
+            set_triangle(t0, c, d, b);
+            set_triangle(t1, d, c, a);
+
+            // update edge AB, which becomes flipped edge CD
+            set_edge_vertices(eab, c, d);
+            set_edge_triangles(eab, t0, t1);
+            int ecd = eab;
+
+            // update the two other edges whose triangle nbrs have changed
+            if (!replace_edge_triangle(eca, t0, t1))
+                throw new ArgumentException("NTMesh3.FlipEdge: first replace_edge_triangle failed");
+            if (!replace_edge_triangle(edb, t1, t0))
+                throw new ArgumentException("NTMesh3.FlipEdge: second replace_edge_triangle failed");
+
+            // update triangle nbr lists (these are edges)
+            set_triangle_edges(t0, ecd, edb, ebc);
+            set_triangle_edges(t1, ecd, eca, ead);
+
+            // remove old eab from verts a and b, and decrement ref counts
+            if (vertex_edges.Remove(a, eab) == false)
+                throw new ArgumentException("NTMesh3.FlipEdge: first edge list remove failed");
+            if (vertex_edges.Remove(b, eab) == false)
+                throw new ArgumentException("NTMesh3.FlipEdge: second edge list remove failed");
+            vertices_refcount.decrement(a);
+            vertices_refcount.decrement(b);
+            if (IsVertex(a) == false || IsVertex(b) == false)
+                throw new ArgumentException("NTMesh3.FlipEdge: either a or b is not a vertex?");
+
+            // add new edge ecd to verts c and d, and increment ref counts
+            vertex_edges.Insert(c, ecd);
+            vertex_edges.Insert(d, ecd);
+            vertices_refcount.increment(c);
+            vertices_refcount.increment(d);
+
+            // success! collect up results
+            flip.eID = eab;
+            flip.v0 = a; flip.v1 = b;
+            flip.ov0 = c; flip.ov1 = d;
+            flip.t0 = t0; flip.t1 = t1;
+
+            updateTimeStamp(true);
+            return MeshResult.Ok;
+        }
+
 
     }
 }
