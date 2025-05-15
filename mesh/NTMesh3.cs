@@ -1073,16 +1073,88 @@ namespace g4
         /// <summary>
         /// returns true if vID is a "bowtie" vertex, ie multiple disjoint triangle sets in one-ring
         /// </summary>
+        //public bool IsBowtieVertex(int vID)
+        //{
+        //    if (vertices_refcount.isValid(vID)) {
+        //        int nTris = GetVtxTriangleCount(vID);
+        //        int vtx_edge_count = GetVtxEdgeCount(vID);
+        //        if (!(nTris == vtx_edge_count || nTris == vtx_edge_count - 1))
+        //            return true;
+        //        return false;
+        //    } else
+        //        throw new Exception("NTMesh3.IsBowtieVertex: " + vID + " is not a valid vertex");
+        //}
+
+
+        /// <summary>
+        /// returns true if vID is a "bowtie" vertex, ie multiple disjoint triangle sets in one-ring
+        /// </summary>
         public bool IsBowtieVertex(int vID)
         {
-            if (vertices_refcount.isValid(vID)) {
-                int nTris = GetVtxTriangleCount(vID);
-                int vtx_edge_count = GetVtxEdgeCount(vID);
-                if (!(nTris == vtx_edge_count || nTris == vtx_edge_count - 1))
-                    return true;
-                return false;
-            } else
-                throw new Exception("NTMesh3.IsBowtieVertex: " + vID + " is not a valid vertex");
+            if (vertices_refcount.isValid(vID))
+            {
+                int nEdges = vertex_edges.Count(vID);
+                if (nEdges == 0)
+                    return false;
+
+                // find a boundary edge to start at
+                int start_eid = -1;
+                bool start_at_boundary = false;
+                foreach (int eid in vertex_edges.ValueItr(vID))
+                {
+                    if (IsBoundaryEdge(eid))
+                    {
+                        start_at_boundary = true;
+                        start_eid = eid;
+                        break;
+                    }
+                }
+                // if no boundary edge, start at arbitrary edge
+                if (start_eid == -1)
+                    start_eid = vertex_edges.First(vID);
+                // initial triangle
+                int start_tid = EdgeTrianglesItr(start_eid).First();
+
+                int prev_tid = start_tid;
+                int prev_eid = start_eid;
+
+                // walk forward to next edge. if we hit start edge or boundary edge,
+                // we are done the walk. count number of edges as we go.
+                int count = 1;
+                var stack = new List<(int next_eid, int next_tid)>();
+                var visited = new HashSet<int>() { };
+                while (true)
+                {
+                    visited.Add(prev_tid);
+                    int i = 3 * prev_tid;
+                    Index3i tv = new Index3i(triangles[i], triangles[i + 1], triangles[i + 2]);
+                    Index3i te = new Index3i(triangle_edges[i], triangle_edges[i + 1], triangle_edges[i + 2]);
+                    int vert_idx = IndexUtil.find_tri_index(vID, ref tv);
+                    int e1 = te[vert_idx], e2 = te[(vert_idx + 2) % 3];
+                    
+                    int next_eid = (e1 == prev_eid) ? e2 : e1;
+                    var next_eid_tris = EdgeTrianglesItr(next_eid).Except(visited);
+
+                    stack.AddRange(next_eid_tris.Select(ntid => (next_eid, ntid)));
+                    if (stack.Count == 0)
+                        break;
+
+                    var next = stack[0];
+                    stack.RemoveAt(0);
+
+                    prev_eid = next.next_eid;
+                    prev_tid = next.next_tid;
+                    count++;
+                }
+
+                // if we did not see all edges at vertex, we have a bowtie
+                int target_count = (start_at_boundary) ? nEdges - 1 : nEdges;
+                bool is_bowtie = (target_count != count);
+                return is_bowtie;
+
+            }
+            else
+                throw new Exception("DMesh3.IsBowtieVertex: " + vID + " is not a valid vertex");
         }
 
 
@@ -1142,16 +1214,28 @@ namespace g4
             return true;            
         }
 
-        public bool IsManifold()
+        public bool HasNonManifoldEdge()
         {
             for (int i = 0; i < EdgeCount; i++)
             {
-                if (IsNonManifoldEdge(i))
+                if (IsEdge(i) && IsNonManifoldEdge(i))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
+        }
+
+        public bool HasBowtieVertex()
+        {
+            for (int i = 0; i < VertexCount; i++)
+            {
+                if (IsVertex(i) && IsBowtieVertex(i))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool HasSelfIntersections()
