@@ -25,6 +25,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="geometry4SharpTests\**" />
+    <EmbeddedResource Remove="geometry4SharpTests\**" />
+    <None Remove="geometry4SharpTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
