@@ -52,20 +52,23 @@ namespace g4
 
         public bool IsPointInTriangle(Vector3d point, double epsilon = 1e-06)
         {
-            return IsPointInTriangleBaryCoords(BarycentricCoords(point), epsilon);
+            return IsPointInTriangleBaryCoords(point, epsilon);
         }
 
-        private static bool IsPointInTriangleBaryCoords(Vector3d baryCoords, double epsilon = 1e-06)
+        private bool IsPointInTriangleBaryCoords(Vector3d point, double epsilon = 1e-06)
         {
-            // Check if all barycenter coordinates are between 0 and 1, inclusive
-            var condition1 = baryCoords.x >= -epsilon && baryCoords.x <= 1.0 + epsilon;
-            var condition2 = baryCoords.y >= -epsilon && baryCoords.y <= 1.0 + epsilon;
-            var condition3 = baryCoords.z >= -epsilon && baryCoords.z <= 1.0 + epsilon;
+            // Distance from point to triangle's plane
+            var distToPlane = (point - V0).Dot(Normal);
 
-            // Check if the sum of barycenter coordinates is approximately 1
-            var sumIsOne = Math.Abs(baryCoords.x + baryCoords.y + baryCoords.z - 1.0) < epsilon;
+            if (Math.Abs(distToPlane) > epsilon)
+            {
+                return false; // Outside triangle's plane
+            }
+            
+            var bary = BarycentricCoords(point);
 
-            return condition1 && condition2 && condition3 && sumIsOne;
+            return bary.x >= -epsilon && bary.y >= -epsilon && bary.z >= -epsilon &&
+                   Math.Abs(bary.x + bary.y + bary.z - 1.0) < epsilon;
         }
 
         public bool IsDegenerate(float epsilon = 1e-4f)
