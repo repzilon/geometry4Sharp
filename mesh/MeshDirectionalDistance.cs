@@ -223,6 +223,47 @@ namespace g4
             });
 
             return result;
+        }        
+        
+        public static (double distance, Vector3d point1, Vector3d point2) ComputeMinimumDirectionalDistance(
+            NTMesh3 meshA, NTMesh3 meshB, Vector3d directionNormalized)
+        {
+            var triAIndices = meshA.TriangleIndices().ToArray();
+            var triBIndices = meshB.TriangleIndices().ToArray();
+
+            (double distance, Vector3d point1, Vector3d point2) result = (double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
+
+            var syncObj = new object();
+
+            Parallel.ForEach(triAIndices, triAIndex =>
+            {
+                Triangle3d triA = default;
+                meshA.GetTriVertices(triAIndex, ref triA.V0, ref triA.V1, ref triA.V2);
+
+                foreach (var tri2Index in triBIndices)
+                {
+                    Triangle3d triB = default;
+                    meshB.GetTriVertices(tri2Index, ref triB.V0, ref triB.V1, ref triB.V2);
+
+                    if (triA.IsDegenerate() ||
+                        triB.IsDegenerate())
+                    {
+                        continue;
+                    }
+
+                    var minDirectionalDistance = ComputeMinimumDirectionalDistance(triA, triB, directionNormalized);
+
+                    lock (syncObj)
+                    {
+                        if (minDirectionalDistance.distance < result.distance)
+                        {
+                            result = minDirectionalDistance;
+                        }
+                    }
+                }
+            });
+
+            return result;
         }
     }
 }
