@@ -59,6 +59,20 @@ namespace g4
             }
         }
 
+        public void CopyTo(NTMesh3 SetMesh)
+        {
+            if (SetMesh.MaxVertexID < Mesh.MaxVertexID)
+                throw new Exception("MeshNormals.Set: SetMesh does not have enough vertices!");
+            if (!SetMesh.HasVertexNormals)
+                SetMesh.EnableVertexNormals(Vector3f.AxisY);
+            int NV = Mesh.MaxVertexID;
+            for ( int vi = 0; vi < NV; ++vi ) {
+                if ( Mesh.IsVertex(vi) && SetMesh.IsVertex(vi) ) {
+                    SetMesh.SetVertexNormal(vi, (Vector3f)Normals[vi]);
+                }
+            }
+        }
+
 
 
 
@@ -106,8 +120,25 @@ namespace g4
             normals.CopyTo(mesh);
         }
 
+        public static void QuickCompute(NTMesh3 mesh)
+        {
+            MeshNormals normals = new MeshNormals(mesh);
+            normals.Compute();
+            normals.CopyTo(mesh);
+        }
 
         public static Vector3d QuickCompute(DMesh3 mesh, int vid, NormalsTypes type = NormalsTypes.Vertex_OneRingFaceAverage_AreaWeighted)
+        {
+            Vector3d sum = Vector3d.Zero;
+            Vector3d n, c; double a;
+            foreach ( int tid in mesh.VtxTrianglesItr(vid)) {
+                mesh.GetTriInfo(tid, out n, out a, out c);
+                sum += a * n;
+            }
+            return sum.Normalized;
+        }
+
+        public static Vector3d QuickCompute(NTMesh3 mesh, int vid, NormalsTypes type = NormalsTypes.Vertex_OneRingFaceAverage_AreaWeighted)
         {
             Vector3d sum = Vector3d.Zero;
             Vector3d n, c; double a;

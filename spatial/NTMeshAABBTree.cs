@@ -1151,6 +1151,160 @@ namespace g4
             return result;
         }
 
+        /// <summary>
+        /// Compute all self-intersections of a mesh. 
+        /// TransformF argument transforms vertices of otherTree to our tree (can be null if in same coord space)
+        /// Returns pairs of intersecting triangles, which could intersect in either point or segment
+        /// </summary>
+        public virtual IntersectionsTrianglesQueryResult FindAllSelfIntersectionsTriangles(Func<Vector3d, Vector3d> TransformF = null)
+        {
+            if (mesh_timestamp != mesh.ShapeTimestamp)
+                throw new Exception("NTMeshAABBTree3.FindIntersections: mesh has been modified since tree construction");
+
+            var result = new IntersectionsTrianglesQueryResult
+            {
+                TrianglePairs = new List<(int, int)>()
+            };
+
+            var intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
+            find_self_intersection_triangles(root_index, TransformF, root_index, 0, intr, result);
+
+            return result;
+        }
+
+        protected void find_self_intersection_triangles(int iBox, Func<Vector3d, Vector3d> TransformF,
+                                  int oBox, int depth,
+                                  IntrTriangle3Triangle3 intr, IntersectionsTrianglesQueryResult result)
+        {
+            int idx = box_to_index[iBox];
+            int odx = box_to_index[oBox];
+
+            if (idx < triangles_end && odx < triangles_end)
+            {
+                // ok we are at triangles for both trees, do triangle-level testing
+                Triangle3d tri = new Triangle3d(), otri = new Triangle3d();
+                int num_tris = index_list[idx], onum_tris = index_list[odx];
+
+                // outer iteration is "other" tris that need to be transformed (more expensive)
+                for (int j = 1; j <= onum_tris; ++j)
+                {
+                    int tj = index_list[odx + j];
+                    if (TriangleFilterF != null && TriangleFilterF(tj) == false)
+                        continue;
+                    mesh.GetTriVertices(tj, ref otri.V0, ref otri.V1, ref otri.V2);
+                    if (TransformF != null)
+                    {
+                        otri.V0 = TransformF(otri.V0);
+                        otri.V1 = TransformF(otri.V1);
+                        otri.V2 = TransformF(otri.V2);
+                    }
+                    intr.Triangle0 = otri;
+                    var edges = mesh.GetTriEdges(tj);
+
+                    var neighboringTriangles = new List<int>();
+                    neighboringTriangles.AddRange(mesh.EdgeTrianglesItr(edges.a));
+                    neighboringTriangles.AddRange(mesh.EdgeTrianglesItr(edges.b));
+                    neighboringTriangles.AddRange(mesh.EdgeTrianglesItr(edges.c));
+                    neighboringTriangles = neighboringTriangles.Distinct().ToList();
+
+                    // inner iteration over "our" triangles
+                    for (int i = 1; i <= num_tris; ++i)
+                    {
+                        int ti = index_list[idx + i];
+
+                        // Checks if it is the same triangle, or if they are neighbors
+                        if (neighboringTriangles.Contains(ti))
+                            continue;
+
+                        if (TriangleFilterF != null && TriangleFilterF(ti) == false)
+                            continue;
+
+                        mesh.GetTriVertices(ti, ref tri.V0, ref tri.V1, ref tri.V2);
+                        intr.Triangle1 = tri;
+
+                        // [RMS] Test() is much faster than Find() so it makes sense to call it first, as most
+                        // triangles will not intersect (right?)
+                        if (intr.Find() && intr.Type != IntersectionType.Point)
+                        {
+                            result.TrianglePairs.Add((ti, tj));
+                        }
+                    }
+                }
+
+                // done these nodes
+                return;
+            }
+
+            // we either descend "our" tree or the other tree
+            //   - if we have hit triangles on "our" tree, we have to descend other
+            //   - if we hit triangles on "other", we have to descend ours
+            //   - otherwise, we alternate at each depth. This produces wider
+            //     branching but is significantly faster (~10x) for both hits and misses
+            bool bDescendOther = (idx < triangles_end || depth % 2 == 0);
+            if (bDescendOther && odx < triangles_end)
+                bDescendOther = false;      // can't
+
+            if (bDescendOther)
+            {
+                // ok we hit triangles on our side but we need to still reach triangles on
+                // the other side, so we descend "their" children
+
+                // [TODO] could we do efficient box.intersects(transform(box)) test?
+                //   ( Contains() on each xformed point? )
+                AxisAlignedBox3d bounds = get_boxd(iBox);
+
+                int oChild1 = index_list[odx];
+                if (oChild1 < 0)
+                {                 // 1 child, descend if nearer than cur min-dist
+                    oChild1 = (-oChild1) - 1;
+                    AxisAlignedBox3d oChild1Box = get_boxd(oChild1, TransformF);
+                    if (oChild1Box.Intersects(bounds))
+                        find_self_intersection_triangles(iBox, TransformF, oChild1, depth + 1, intr, result);
+
+                }
+                else
+                {                            // 2 children
+                    oChild1 = oChild1 - 1;
+
+                    AxisAlignedBox3d oChild1Box = get_boxd(oChild1, TransformF);
+                    if (oChild1Box.Intersects(bounds))
+                        find_self_intersection_triangles(iBox, TransformF, oChild1, depth + 1, intr, result);
+
+                    int oChild2 = index_list[odx + 1] - 1;
+                    AxisAlignedBox3d oChild2Box = get_boxd(oChild2, TransformF);
+                    if (oChild2Box.Intersects(bounds))
+                        find_self_intersection_triangles(iBox, TransformF, oChild2, depth + 1, intr, result);
+                }
+
+            }
+            else
+            {
+                // descend our tree nodes if they intersect w/ current bounds of other tree
+                AxisAlignedBox3d oBounds = get_boxd(oBox, TransformF);
+
+                int iChild1 = index_list[idx];
+                if (iChild1 < 0)
+                {                 // 1 child, descend if nearer than cur min-dist
+                    iChild1 = (-iChild1) - 1;
+                    if (box_box_intersect(iChild1, ref oBounds))
+                        find_self_intersection_triangles(iChild1, TransformF, oBox, depth + 1, intr, result);
+
+                }
+                else
+                {                            // 2 children
+                    iChild1 = iChild1 - 1;
+                    if (box_box_intersect(iChild1, ref oBounds))
+                        find_self_intersection_triangles(iChild1, TransformF, oBox, depth + 1, intr, result);
+
+                    int iChild2 = index_list[idx + 1] - 1;
+                    if (box_box_intersect(iChild2, ref oBounds))
+                        find_self_intersection_triangles(iChild2, TransformF, oBox, depth + 1, intr, result);
+                }
+
+            }
+        }
+
+
         protected void find_intersections(int iBox, NTMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF,
                                           int oBox, int depth,
                                           IntrTriangle3Triangle3 intr, IntersectionsAndTrianglesQueryResult result)
@@ -1604,6 +1758,29 @@ namespace g4
             return (nHits % 2) != 0;
         }
 
+        /// <summary>
+        /// Returns true if point p is inside this mesh.
+        /// </summary>
+        public virtual bool IsInside(Vector3d p, Vector3d n)
+        {
+            // This is a raycast crossing-count test, which is not ideal!
+            // Only works for closed meshes.
+
+            //AxisAlignedBox3f bounds = get_box(root_index);
+            //Vector3d outside = bounds.Center + 2 * bounds.Diagonal;
+
+            //Vector3d rayDir = Vector3d.AxisX;
+
+            Vector3d rayDir = n.Normalized;
+
+            //Vector3d rayOrigin = p - 2 * bounds.Width * rayDir;
+            Vector3d rayOrigin = p;
+
+            Ray3d ray = new Ray3d(rayOrigin, rayDir);
+            int nHits = FindAllHitTriangles(ray, null);
+
+            return (nHits % 2) != 0;
+        }
 
 
 

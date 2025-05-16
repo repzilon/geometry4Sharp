@@ -45,6 +45,24 @@ namespace g4
             return ValidationStatus.Ok;
         }
 
+        public static ValidationStatus IsEdgeLoop(NTMesh3 mesh, EdgeLoop loop)
+        {
+           int N = loop.Vertices.Length;
+            for ( int i = 0; i < N; ++i ) {
+                if ( ! mesh.IsVertex(loop.Vertices[i]) )
+                    return ValidationStatus.NotAVertex;
+            }
+            for (int i = 0; i < N; ++i) {
+                int a = loop.Vertices[i];
+                int b = loop.Vertices[(i + 1) % N];
+
+                int eid = mesh.FindEdge(a, b);
+                if (eid == DMesh3.InvalidID)
+                    return ValidationStatus.VerticesNotConnectedByEdge;
+            }
+            return ValidationStatus.Ok;
+        }
+
 
 
         public static ValidationStatus IsBoundaryLoop(DMesh3 mesh, EdgeLoop loop)
@@ -74,8 +92,33 @@ namespace g4
 
             return ValidationStatus.Ok;
         }
+        public static ValidationStatus IsBoundaryLoop(NTMesh3 mesh, NTEdgeLoop loop)
+        {
+            int N = loop.Vertices.Length;
 
+            for ( int i = 0; i < N; ++i ) {
+                if ( ! mesh.IsBoundaryVertex(loop.Vertices[i]) )
+                    return ValidationStatus.NotBoundaryVertex;
+            }
 
+            for ( int i = 0; i < N; ++i ) {
+                int a = loop.Vertices[i];
+                int b = loop.Vertices[(i + 1) % N];
+
+                int eid = mesh.FindEdge(a, b);
+                if (eid == DMesh3.InvalidID)
+                    return ValidationStatus.VerticesNotConnectedByEdge;
+
+                if (mesh.IsBoundaryEdge(eid) == false)
+                    return ValidationStatus.NotBoundaryEdge;
+
+                Index2i ev = mesh.GetOrientedBoundaryEdgeV(eid);
+                if (!(ev.a == a && ev.b == b))
+                    return ValidationStatus.IncorrectLoopOrientation;
+            }
+
+            return ValidationStatus.Ok;
+        }
 
         public static ValidationStatus HasDuplicateTriangles(DMesh3 mesh)
         {
@@ -87,7 +130,5 @@ namespace g4
 
             return ValidationStatus.Ok;
         }
-
-
     }
 }

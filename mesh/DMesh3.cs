@@ -2048,7 +2048,7 @@ namespace g4
                     if (edges_refcount.isValid(i) && IsBoundaryEdge(i))
                         return false;
             }
-            return true;            
+            return true;
         }
 
         public bool CachedIsClosed {
@@ -2061,6 +2061,19 @@ namespace g4
             }
         }
 
+
+        public bool HasSelfIntersections()
+        {
+            var tree = new DMeshAABBTree3(this);
+            return tree.FindAllSelfIntersectionsTriangles().TrianglePairs.Count > 0;
+        }
+
+        public int NumberOfComponents()
+        {
+            var meshConnectedComponents = new MeshConnectedComponents(this);
+            meshConnectedComponents.FindConnectedT();
+            return meshConnectedComponents.Count;
+        }
 
 
 
