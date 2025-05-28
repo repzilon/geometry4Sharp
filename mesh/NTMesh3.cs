@@ -107,6 +107,7 @@ namespace g4
             edges = new DVector<int>(copy.edges);
             edges_refcount = new RefCountVector(copy.edges_refcount);
             edge_triangles = new SmallListSet(copy.edge_triangles);
+            updateTimeStamp(true);
         }
 
 
@@ -1197,6 +1198,15 @@ namespace g4
         bool cached_is_closed = false;
         int cached_is_closed_timstamp = -1;
 
+        bool cached_has_non_manifold_edge = false;
+        int cached_has_non_manifold_edge_timestamp = -1;
+
+        bool cached_has_self_intersections = false;
+        int cached_has_self_intersections_timestamp = -1;
+
+        int cached_number_of_components = 0;
+        int cached_number_of_components_timestamp = -1;
+
         public bool IsClosed() {
             if (TriangleCount == 0)
                 return false;
@@ -1261,7 +1271,35 @@ namespace g4
             }
         }
 
+        public bool CachedHasNonManifoldEdge {
+            get {
+                if (cached_has_non_manifold_edge_timestamp != Timestamp) {
+                    cached_has_non_manifold_edge = HasNonManifoldEdge();
+                    cached_has_non_manifold_edge_timestamp = Timestamp;
+                }
+                return cached_has_non_manifold_edge;
+            }
+        }
 
+        public bool CachedHasSelfIntersections {
+            get {
+                if (cached_has_self_intersections_timestamp != Timestamp) {
+                    cached_has_self_intersections = HasSelfIntersections();
+                    cached_has_self_intersections_timestamp = Timestamp;
+                }
+                return cached_has_self_intersections;
+            }
+        }
+
+        public int CachedNumberOfComponents {
+            get {
+                if (cached_number_of_components_timestamp != Timestamp) {
+                    cached_number_of_components = NumberOfComponents();
+                    cached_number_of_components_timestamp = Timestamp;
+                }
+                return cached_number_of_components;
+            }
+        }
 
 
         public bool IsCompact {
