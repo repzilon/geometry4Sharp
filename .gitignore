@@ -30,10 +30,10 @@
 *.exe
 *.out
 *.app
-geometry4Sharp/bin
-geometry4Sharp/obj
-geometry4Sharp.csproj.user
-bin
-obj
-.vs
+bin/
+obj/
+
+# Per-user metadata
+*.user
 *.meta
+*.bak
