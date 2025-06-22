@@ -533,7 +533,7 @@ namespace g4
 
 		void debug_fail(string s) {
 		#if DEBUG
-			System.Console.WriteLine("DMesh3.CollapseEdge: check failed: " + s);
+			Console.WriteLine("DMesh3.CollapseEdge: check failed: " + s);
 			Debug.Assert(false);
 			//throw new Exception("DMesh3.CollapseEdge: check failed: " + s);
 		#endif
@@ -845,9 +845,9 @@ namespace g4
 			merge_info.eRemoved = ecd;
 
             // if a/c or b/d are connected by an existing edge, we can't merge
-            if (a != c && find_edge(a,c) != DMesh3.InvalidID )
+            if (a != c && find_edge(a,c) != InvalidID )
                 return MeshResult.Failed_InvalidNeighbourhood;
-            if (b != d && find_edge(b, d) != DMesh3.InvalidID)
+            if (b != d && find_edge(b, d) != InvalidID)
                 return MeshResult.Failed_InvalidNeighbourhood;
 
             // if vertices at either end already share a common neighbour vertex, and we 
@@ -858,7 +858,7 @@ namespace g4
             if ( a != c ) {
                 int ea = 0, ec = 0, other_v = (b == d) ? b : -1;
                 foreach ( int cnbr in VtxVerticesItr(c) ) {
-                    if (cnbr != other_v && (ea = find_edge(a, cnbr)) != DMesh3.InvalidID) {
+                    if (cnbr != other_v && (ea = find_edge(a, cnbr)) != InvalidID) {
                         ec = find_edge(c, cnbr);
                         if (IsBoundaryEdge(ea) == false || IsBoundaryEdge(ec) == false)
                             return MeshResult.Failed_InvalidNeighbourhood;
@@ -868,7 +868,7 @@ namespace g4
             if ( b != d ) {
                 int eb = 0, ed = 0, other_v = (a == c) ? a : -1;
                 foreach ( int dnbr in VtxVerticesItr(d)) {
-                    if (dnbr != other_v && (eb = find_edge(b, dnbr)) != DMesh3.InvalidID) {
+                    if (dnbr != other_v && (eb = find_edge(b, dnbr)) != InvalidID) {
                         ed = find_edge(d, dnbr);
                         if (IsBoundaryEdge(eb) == false || IsBoundaryEdge(ed) == false)
                             return MeshResult.Failed_InvalidNeighbourhood;

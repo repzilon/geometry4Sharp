@@ -1,7 +1,4 @@
-﻿using System;
-
-
-namespace g4
+﻿namespace g4
 {
     // Very hard to abstract material definitions from different formats.
     // basically we just have a generic top-level class and then completely different subclasses...

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -35,7 +32,7 @@ namespace g4
 
         public DistRay3Segment3(Ray3d rayIn, Segment3d segmentIn)
         {
-            this.ray = rayIn; this.segment = segmentIn;
+            ray = rayIn; segment = segmentIn;
         }
 
 

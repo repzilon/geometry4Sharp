@@ -2,7 +2,6 @@
 // Distributed under the Boost Software License, Version 1.0. http://www.boost.org/LICENSE_1_0.txt
 using System;
 using System.Collections.Generic;
-using g4;
 
 namespace g4
 {
@@ -17,7 +16,7 @@ namespace g4
 
 		public PointSetHashtable(IPointSet points)
 		{
-			this.Points = points;
+			Points = points;
 		}
 
 

@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace g4
 {
@@ -43,7 +41,7 @@ namespace g4
                 Vector3d v = Target.GetVertex(vid);
                 int existing = find_existing_vertex(v);
                 if (existing != -1)
-                    System.Console.WriteLine("VERTEX {0} IS DUPLICATE OF {1}!", vid, existing);
+                    Console.WriteLine("VERTEX {0} IS DUPLICATE OF {1}!", vid, existing);
                 PointHash.InsertPointUnsafe(vid, v);
             }
 
@@ -319,7 +317,7 @@ namespace g4
                 }
             }
 
-            System.Console.WriteLine("unsorted vertex!");
+            Console.WriteLine("unsorted vertex!");
             sv.elem_id = pokeTris.a;
         }
 

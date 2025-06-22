@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -43,7 +40,7 @@ namespace g4
 		// solidBox == false means fully contained segment does not intersect
 		public IntrSegment3Box3(Segment3d s, Box3d b, bool solidBox)
 		{
-			segment = s; box = b; this.solid = solidBox;
+			segment = s; box = b; solid = solidBox;
 		}
 
 		public IntrSegment3Box3 Compute()

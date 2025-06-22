@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 
 namespace g4
@@ -1008,7 +1007,7 @@ namespace g4
             foreach (var comp in C.Components) {
                 Vector2d vol_area = MeshMeasurements.VolumeArea(Mesh, comp.Indices, Mesh.GetVertex);
                 if (vol_area.x < min_volume || vol_area.y < min_area) {
-                    MeshEditor.RemoveTriangles(Mesh, comp.Indices);
+                    RemoveTriangles(Mesh, comp.Indices);
                     nRemoved++;
                 }
             }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 
@@ -83,7 +83,7 @@ namespace g4 {
 
 
         public IProjectionTarget ProjectionTarget {
-            get { return this.target; }
+            get { return target; }
         }
         public void SetProjectionTarget(IProjectionTarget target)
         {
@@ -680,7 +680,7 @@ namespace g4 {
         void RuntimeDebugCheck(int eid)
         {
             if (DebugEdges.Contains(eid))
-                System.Diagnostics.Debugger.Break();
+                Debugger.Break();
         }
 
 
@@ -746,13 +746,13 @@ namespace g4 {
 
         protected virtual void end_pass() {
             if ( ENABLE_PROFILING ) {
-                System.Console.WriteLine(string.Format(
+                Console.WriteLine(string.Format(
                     "RemeshPass: T {0} V {1} splits {2} flips {3} collapses {4}", mesh.TriangleCount, mesh.VertexCount, COUNT_SPLITS, COUNT_FLIPS, COUNT_COLLAPSES
                     ));
-                System.Console.WriteLine(string.Format(
+                Console.WriteLine(string.Format(
                     "           Timing1:  ops {0} smooth {1} project {2}", Util.ToSecMilli(AllOpsW.Elapsed), Util.ToSecMilli(SmoothW.Elapsed), Util.ToSecMilli(ProjectW.Elapsed)
                     ));
-                System.Console.WriteLine(string.Format(
+                Console.WriteLine(string.Format(
                     "           Timing2:  collapse {0} flip {1} split {2}", Util.ToSecMilli(CollapseW.Elapsed), Util.ToSecMilli(FlipW.Elapsed), Util.ToSecMilli(SplitW.Elapsed)
                     ));
             }

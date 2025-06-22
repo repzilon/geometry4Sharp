@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -34,7 +31,7 @@ namespace g4
 
         public DistLine3Ray3(Ray3d rayIn, Line3d LineIn)
         {
-            this.ray = rayIn; this.line = LineIn;
+            ray = rayIn; line = LineIn;
         }
 
         static public double MinDistance(Ray3d r, Line3d s)

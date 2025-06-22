@@ -197,7 +197,7 @@ namespace g4
                 return new Quaternionf(
                     -x * invNorm, -y * invNorm, -z * invNorm, w * invNorm);
             } else 
-                return Quaternionf.Zero;
+                return Zero;
         }
         public static Quaternionf Inverse(Quaternionf q) {
             return q.Inverse();
@@ -276,7 +276,7 @@ namespace g4
         public static Quaternionf FromToConstrained(Vector3f vFrom, Vector3f vTo, Vector3f vAround)
         {
             float fAngle = MathUtil.PlaneAngleSignedD(vFrom, vTo, vAround);
-            return Quaternionf.AxisAngleD(vAround, fAngle);
+            return AxisAngleD(vAround, fAngle);
         }
 
 

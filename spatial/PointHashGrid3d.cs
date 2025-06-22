@@ -197,7 +197,7 @@ namespace g4
         {
             foreach ( var entry in Hash ) {
                 if (entry.Value.Count > 512)
-                    System.Console.WriteLine("{0} : {1}", entry.Key, entry.Value.Count);
+                    Console.WriteLine("{0} : {1}", entry.Key, entry.Value.Count);
             }
         }
 

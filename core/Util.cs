@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace g4
 {
@@ -16,8 +15,8 @@ namespace g4
     {
 
 		static public void gBreakToDebugger() {
-			if ( System.Diagnostics.Debugger.IsAttached)
-				System.Diagnostics.Debugger.Break();
+			if ( Debugger.IsAttached)
+				Debugger.Break();
 		}
 
         static public bool DebugBreakOnDevAssert = true;
@@ -26,7 +25,7 @@ namespace g4
         static public void gDevAssert(bool bValue, string message = "gDevAssert") {
             if (bValue == false) {
                 if (DebugBreakOnDevAssert)
-                    System.Diagnostics.Debugger.Break();
+                    Debugger.Break();
                 else
                     throw new Exception(message);
             }

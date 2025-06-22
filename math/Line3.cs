@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace g4
+﻿namespace g4
 {
     public struct Line3d
     {
@@ -12,8 +7,8 @@ namespace g4
 
         public Line3d(Vector3d origin, Vector3d direction)
         {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
         }
 
         // parameter is distance along Line
@@ -60,8 +55,8 @@ namespace g4
 
         public Line3f(Vector3f origin, Vector3f direction)
         {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
         }
 
         // parameter is distance along Line

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace g4
+﻿namespace g4
 {
     /*
      * Basic cache of per-triangle information for a DMesh3

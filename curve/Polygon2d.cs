@@ -63,7 +63,7 @@ namespace g4
 
         public virtual Polygon2d Duplicate() {
 			Polygon2d p = new Polygon2d(this);
-			p.Timestamp = this.Timestamp;
+			p.Timestamp = Timestamp;
 			return p;
 		}
 
@@ -348,7 +348,7 @@ namespace g4
         }
 
         public bool Intersects(Polygon2d o) {
-			if ( ! this.GetBounds().Intersects( o.GetBounds() ) )
+			if ( ! GetBounds().Intersects( o.GetBounds() ) )
 				return false;
 
 			foreach ( Segment2d seg in SegmentItr() ) {
@@ -382,7 +382,7 @@ namespace g4
 
         public List<Vector2d> FindIntersections(Polygon2d o) {
 			List<Vector2d> v = new List<Vector2d>();
-			if ( ! this.GetBounds().Intersects( o.GetBounds() ) )
+			if ( ! GetBounds().Intersects( o.GetBounds() ) )
 				return v;
 
 			foreach ( Segment2d seg in SegmentItr() ) {
@@ -827,7 +827,7 @@ namespace g4
 
         public IParametricCurve2d Clone()
         {
-            return new Polygon2DCurve() { Polygon = new Polygon2d(this.Polygon) };
+            return new Polygon2DCurve() { Polygon = new Polygon2d(Polygon) };
         }
 
         public bool IsTransformable { get { return true; } }

@@ -440,7 +440,7 @@ namespace g4
             int cur_eid = eid;
             bool bContinue = true;
             while (bContinue) {
-                Index2i next = DGraph2Util.NextEdgeAndVtx(cur_eid, cur_vid, graph);
+                Index2i next = NextEdgeAndVtx(cur_eid, cur_vid, graph);
                 int next_eid = next.a;
                 int next_vtx = next.b;
                 if (next_eid == int.MaxValue) {

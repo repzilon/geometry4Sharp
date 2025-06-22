@@ -301,7 +301,7 @@ namespace g4
         public void DebugPrint()
         {
             for (int i = 1; i <= num_nodes; ++i)
-                System.Console.WriteLine("{0} : p {1}  idx {2}", i, nodes[i].priority, nodes[i].index);
+                Console.WriteLine("{0} : p {1}  idx {2}", i, nodes[i].priority, nodes[i].index);
         }
 
     }

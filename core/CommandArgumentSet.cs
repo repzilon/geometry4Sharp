@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -126,11 +124,11 @@ namespace g4
 
         virtual protected void error_missing_argument(string arg)
         {
-            System.Console.WriteLine("argument {0} is missing value", arg);
+            Console.WriteLine("argument {0} is missing value", arg);
         }
         virtual protected void error_invalid_value(string arg, string value)
         {
-            System.Console.WriteLine("argument {0} has invalid value {1}", arg, value);
+            Console.WriteLine("argument {0} has invalid value {1}", arg, value);
         }
 
     }

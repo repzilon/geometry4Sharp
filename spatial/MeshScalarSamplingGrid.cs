@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using g4;
 
 namespace g4
 {
@@ -139,7 +138,7 @@ namespace g4
             scalars.resize(ni, nj, nk);
             scalars.assign(float.MaxValue); // sentinel
 
-            if (DebugPrint) System.Console.WriteLine("start");
+            if (DebugPrint) Console.WriteLine("start");
 
             // Ok, because the whole idea is that the surface might have holes, we are going to 
             // compute values along known triangles and then propagate the computed region outwards
@@ -149,7 +148,7 @@ namespace g4
 
             // compute unsigned SDF
             MeshSignedDistanceGrid sdf = new MeshSignedDistanceGrid(Mesh, CellSize) { ComputeSigns = false };
-            sdf.CancelF = this.CancelF;
+            sdf.CancelF = CancelF;
             sdf.Compute();
             if (CancelF())
                 return;
@@ -157,7 +156,7 @@ namespace g4
             DenseGrid3f distances = sdf.Grid;
             if (WantMeshSDFGrid)
                 mesh_sdf = sdf;
-            if (DebugPrint) System.Console.WriteLine("done initial sdf");
+            if (DebugPrint) Console.WriteLine("done initial sdf");
 
             // compute values at surface voxels
             double ox = (double)origin[0], oy = (double)origin[1], oz = (double)origin[2];
@@ -177,7 +176,7 @@ namespace g4
             if (CancelF())
                 return;
 
-            if (DebugPrint) System.Console.WriteLine("done narrow-band");
+            if (DebugPrint) Console.WriteLine("done narrow-band");
 
             // Now propagate outwards from computed voxels.
             // Current procedure is to check 26-neighbours around each 'front' voxel,
@@ -245,7 +244,7 @@ namespace g4
                         }
                     }
                 });
-                if (DebugPrint) System.Console.WriteLine("front has {0} voxels", queue.Count);
+                if (DebugPrint) Console.WriteLine("front has {0} voxels", queue.Count);
                 if (queue.Count == 0)
                     break;
 
@@ -256,7 +255,7 @@ namespace g4
                 cur_front.AddRange(queue);
                 queue.Clear();
             }
-            if (DebugPrint) System.Console.WriteLine("done front-prop");
+            if (DebugPrint) Console.WriteLine("done front-prop");
 
             if (DebugPrint) {
                 int filled = 0;
@@ -264,7 +263,7 @@ namespace g4
                     if (scalars[ijk] != float.MaxValue)
                         filled++;
                 }
-                System.Console.WriteLine("filled: {0} / {1}  -  {2}%", filled, ni * nj * nk,
+                Console.WriteLine("filled: {0} / {1}  -  {2}%", filled, ni * nj * nk,
                                     (double)filled / (double)(ni * nj * nk) * 100.0);
             }
 
@@ -274,7 +273,7 @@ namespace g4
             // fill in the rest of the grid by propagating know values
             fill_spans(ni, nj, nk, scalars);
 
-            if (DebugPrint) System.Console.WriteLine("done sweep");
+            if (DebugPrint) Console.WriteLine("done sweep");
 
 
         }

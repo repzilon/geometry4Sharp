@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace g4
+﻿namespace g4
 {
     // [TODO] get rid of this!!
     public static class Distance

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace g4
 {
@@ -20,8 +16,8 @@ namespace g4
             GaussPointsFit3 fitter = new GaussPointsFit3(points);
             if (fitter.ResultValid == false)
                 return;
-            this.Box = fitter.Box;
-            this.Box.Contain(points);
+            Box = fitter.Box;
+            Box.Contain(points);
         }
 
         public ContOrientedBox3(IEnumerable<Vector3d> points, IEnumerable<double> pointWeights)
@@ -30,8 +26,8 @@ namespace g4
             GaussPointsFit3 fitter = new GaussPointsFit3(points, pointWeights);
             if (fitter.ResultValid == false)
                 return;
-            this.Box = fitter.Box;
-            this.Box.Contain(points);
+            Box = fitter.Box;
+            Box.Contain(points);
         }
     }
 }

@@ -105,7 +105,7 @@ namespace g4
 
 
         public void push_back(T value) {
-            this.Add(value);
+            Add(value);
         }
         public void pop_back() {
             if (iCurBlockUsed > 0)
@@ -169,17 +169,17 @@ namespace g4
 
         public void copy(DVector<T> copyIn)
         {
-            if (this.Blocks != null && copyIn.Blocks.Count == this.Blocks.Count) {
+            if (Blocks != null && copyIn.Blocks.Count == Blocks.Count) {
                 int N = copyIn.Blocks.Count;
                 for (int k = 0; k < N; ++k)
-                    Array.Copy(copyIn.Blocks[k], this.Blocks[k], copyIn.Blocks[k].Length);
+                    Array.Copy(copyIn.Blocks[k], Blocks[k], copyIn.Blocks[k].Length);
                 iCurBlock = copyIn.iCurBlock;
                 iCurBlockUsed = copyIn.iCurBlockUsed;
             } else {
                 resize(copyIn.size);
                 int N = copyIn.Blocks.Count;
                 for (int k = 0; k < N; ++k)
-                    Array.Copy(copyIn.Blocks[k], this.Blocks[k], copyIn.Blocks[k].Length);
+                    Array.Copy(copyIn.Blocks[k], Blocks[k], copyIn.Blocks[k].Length);
                 iCurBlock = copyIn.iCurBlock;
                 iCurBlockUsed = copyIn.iCurBlockUsed;
             }
@@ -223,14 +223,14 @@ namespace g4
         // [RMS] slowest option, but only one that is completely generic
         public void GetBuffer(T[] data)
         {
-            int nLen = this.Length;
+            int nLen = Length;
             for (int k = 0; k < nLen; ++k)
                 data[k] = this[k];
         }
         public T[] GetBuffer()      // todo: deprecate this...
         {
-            T[] data = new T[this.Length];
-            for (int k = 0; k < this.Length; ++k)
+            T[] data = new T[Length];
+            for (int k = 0; k < Length; ++k)
                 data[k] = this[k];
             return data;
         }
@@ -241,8 +241,8 @@ namespace g4
         // warning: this may be quite slow!
         public T2[] GetBufferCast<T2>()
         {
-            T2[] data = new T2[this.Length];
-            for (int k = 0; k < this.Length; ++k)
+            T2[] data = new T2[Length];
+            for (int k = 0; k < Length; ++k)
                 data[k] = (T2)Convert.ChangeType(this[k], typeof(T2));
             return data;
         }
@@ -252,7 +252,7 @@ namespace g4
         {
             Type type = typeof(T);
             int n = System.Runtime.InteropServices.Marshal.SizeOf(type);
-            byte[] buffer = new byte[this.Length * n];
+            byte[] buffer = new byte[Length * n];
             int i = 0;
             int N = Blocks.Count;
             for ( int k = 0; k < N-1; ++k ) {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace g4
+﻿namespace g4
 {
     // variant of Wm5::Query2, for special case of 3 points. This is used in
     // IntrTriangle3Triangle3, to avoid allocating arrays

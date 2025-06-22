@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -94,7 +91,7 @@ namespace g4
 
         public void ConvertFromRGB(Colorf rgb)
         {
-            this.a = rgb.a;
+            a = rgb.a;
             float rp = rgb.r, gp = rgb.g, bp = rgb.b;
 
             float cmax = rp;
@@ -110,7 +107,7 @@ namespace g4
 
             /* HUE */
             if (delta == 0) {
-                this.h = 0;
+                h = 0;
             } else {
                 switch (cmaxwhich) {
                     case 0: /* cmax == rp */

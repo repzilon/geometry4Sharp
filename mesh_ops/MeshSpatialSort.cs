@@ -59,19 +59,19 @@ namespace gs
 
             public ComponentMesh(DMesh3 mesh, object identifier, DMeshAABBTree3 spatial)
             {
-                this.Mesh = mesh;
-                this.Identifier = identifier;
-                this.IsClosed = mesh.IsClosed();
-                this.Spatial = spatial;
+                Mesh = mesh;
+                Identifier = identifier;
+                IsClosed = mesh.IsClosed();
+                Spatial = spatial;
                 Bounds = mesh.CachedBounds;
             }
 
             public bool Contains(ComponentMesh mesh2, double fIso = 0.5f)
             {
-                if (this.Spatial == null)
+                if (Spatial == null)
                     return false;
                 // make sure FWN is available
-                this.Spatial.FastWindingNumber(Vector3d.Zero);
+                Spatial.FastWindingNumber(Vector3d.Zero);
 
                 // block-parallel iteration provides a reasonable speedup
                 int NV = mesh2.Mesh.VertexCount;

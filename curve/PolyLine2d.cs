@@ -154,7 +154,7 @@ namespace g4
 		}
 
 
-        [System.Obsolete("This method name is confusing. Will remove in future. Use ArcLength instead")]
+        [Obsolete("This method name is confusing. Will remove in future. Use ArcLength instead")]
         public double Length { get { return ArcLength; } }
         public double ArcLength {
             get {
@@ -423,7 +423,7 @@ namespace g4
 
         public IParametricCurve2d Clone()
         {
-            return new PolyLine2DCurve() { Polyline = new PolyLine2d(this.Polyline) };
+            return new PolyLine2DCurve() { Polyline = new PolyLine2d(Polyline) };
         }
 
         public bool IsTransformable { get { return true; } }

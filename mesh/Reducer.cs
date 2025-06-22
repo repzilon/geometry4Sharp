@@ -655,7 +655,7 @@ skip_to_end:
         protected virtual void RuntimeDebugCheck(int eid)
         {
             if (DebugEdges.Contains(eid))
-                System.Diagnostics.Debugger.Break();
+                Debugger.Break();
         }
 
 
@@ -721,10 +721,10 @@ skip_to_end:
 
         protected virtual void end_pass() {
             if ( ENABLE_PROFILING ) {
-                System.Console.WriteLine(string.Format(
+                Console.WriteLine(string.Format(
 					"ReducePass: T {0} V {1} collapses {2}  iterations {3}", mesh.TriangleCount, mesh.VertexCount, COUNT_COLLAPSES, COUNT_ITERATIONS
                     ));
-                System.Console.WriteLine(string.Format(
+                Console.WriteLine(string.Format(
 					"           Timing1: setup {0} ops {1} project {2}", Util.ToSecMilli(SetupW.Elapsed), Util.ToSecMilli(AllOpsW.Elapsed), Util.ToSecMilli(ProjectW.Elapsed)
                     ));
             }

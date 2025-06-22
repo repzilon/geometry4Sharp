@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -222,9 +219,9 @@ namespace g4
         {
             int c = VertexCount;
             for (int i = 0; i < c; ++i) {
-                this.Vertices[3 * i] += tx;
-                this.Vertices[3 * i + 1] += ty;
-                this.Vertices[3 * i + 2] += tz;
+                Vertices[3 * i] += tx;
+                Vertices[3 * i + 1] += ty;
+                Vertices[3 * i + 2] += tz;
             }
             updateTimeStamp();
         }
@@ -232,9 +229,9 @@ namespace g4
         {
             int c = VertexCount;
             for (int i = 0; i < c; ++i) {
-                this.Vertices[3 * i] *= sx;
-                this.Vertices[3 * i + 1] *= sy;
-                this.Vertices[3 * i + 2] *= sz;
+                Vertices[3 * i] *= sx;
+                Vertices[3 * i + 1] *= sy;
+                Vertices[3 * i + 2] *= sz;
             }
             updateTimeStamp();
         }
@@ -433,39 +430,39 @@ namespace g4
          */
         public double[] GetVertexArray()
         {
-            return this.Vertices.GetBuffer();
+            return Vertices.GetBuffer();
         }
         public float[] GetVertexArrayFloat()
         {
-            float[] buf = new float[this.Vertices.Length];
-            for (int i = 0; i < this.Vertices.Length; ++i)
-                buf[i] = (float)this.Vertices[i];
+            float[] buf = new float[Vertices.Length];
+            for (int i = 0; i < Vertices.Length; ++i)
+                buf[i] = (float)Vertices[i];
             return buf;
         }
 
         public float[] GetVertexNormalArray()
         {
-            return (this.HasVertexNormals) ? this.Normals.GetBuffer() : null;
+            return (HasVertexNormals) ? Normals.GetBuffer() : null;
         }
 
         public float[] GetVertexColorArray()
         {
-            return (this.HasVertexColors) ? this.Colors.GetBuffer() : null;
+            return (HasVertexColors) ? Colors.GetBuffer() : null;
         }
 
         public float[] GetVertexUVArray()
         {
-            return (this.HasVertexUVs) ? this.UVs.GetBuffer() : null;
+            return (HasVertexUVs) ? UVs.GetBuffer() : null;
         }
 
         public int[] GetTriangleArray()
         {
-            return this.Triangles.GetBuffer();
+            return Triangles.GetBuffer();
         }
 
         public int[] GetFaceGroupsArray()
         {
-            return (this.HasTriangleGroups) ? this.FaceGroups.GetBuffer() : null;
+            return (HasTriangleGroups) ? FaceGroups.GetBuffer() : null;
         }
 
 
@@ -477,36 +474,36 @@ namespace g4
 
         public unsafe void GetVertexBuffer(double * pBuffer)
         {
-            DVector<double>.FastGetBuffer(this.Vertices, pBuffer);
+            DVector<double>.FastGetBuffer(Vertices, pBuffer);
         }
 
         public unsafe void GetVertexNormalBuffer(float * pBuffer)
         {
-            if ( this.HasVertexNormals )
-                DVector<float>.FastGetBuffer(this.Normals, pBuffer);
+            if ( HasVertexNormals )
+                DVector<float>.FastGetBuffer(Normals, pBuffer);
         }
 
         public unsafe void GetVertexColorBuffer(float* pBuffer)
         {
-            if (this.HasVertexColors)
-                DVector<float>.FastGetBuffer(this.Colors, pBuffer);
+            if (HasVertexColors)
+                DVector<float>.FastGetBuffer(Colors, pBuffer);
         }
 
         public unsafe void GetVertexUVBuffer(float* pBuffer)
         {
-            if (this.HasVertexUVs)
-                DVector<float>.FastGetBuffer(this.UVs, pBuffer);
+            if (HasVertexUVs)
+                DVector<float>.FastGetBuffer(UVs, pBuffer);
         }
 
         public unsafe void GetTriangleBuffer(int* pBuffer)
         {
-            DVector<int>.FastGetBuffer(this.Triangles, pBuffer);
+            DVector<int>.FastGetBuffer(Triangles, pBuffer);
         }
 
         public unsafe void GetFaceGroupsBuffer(int* pBuffer)
         {
-            if ( this.HasTriangleGroups)
-                DVector<int>.FastGetBuffer(this.FaceGroups, pBuffer);
+            if ( HasTriangleGroups)
+                DVector<int>.FastGetBuffer(FaceGroups, pBuffer);
         }
 
     }

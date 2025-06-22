@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -31,7 +28,7 @@ namespace g4
 
         public DistTriangle3Triangle3(Triangle3d Triangle0in, Triangle3d Triangle1in)
         {
-            this.triangle0 = Triangle0in; this.triangle1 = Triangle1in;
+            triangle0 = Triangle0in; triangle1 = Triangle1in;
         }
 
         public DistTriangle3Triangle3 Compute()

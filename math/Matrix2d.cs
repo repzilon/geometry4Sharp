@@ -24,7 +24,7 @@ namespace g4
             this.m00 = m00; this.m01 = m01; this.m10 = m10; this.m11 = m11;
         }
         public Matrix2d(double m00, double m11) {
-            this.m00 = m00; this.m11 = m11; this.m01 = this.m10 = 0;
+            this.m00 = m00; this.m11 = m11; m01 = m10 = 0;
         }
 
         // Create a rotation matrix (positive angle -> counterclockwise).
@@ -64,7 +64,7 @@ namespace g4
 
         public void SetToDiagonal(double m00, double m11) {
             this.m00 = m00; this.m11 = m11;
-            this.m01 = this.m10 = 0;
+            m01 = m10 = 0;
         }
 
         public void SetToRotationRad(double angleRad) {

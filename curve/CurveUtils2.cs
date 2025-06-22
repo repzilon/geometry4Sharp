@@ -220,7 +220,7 @@ namespace g4
         {
             LaplacianSmoothConstrained(solid.Outer, alpha, iterations, max_dist, bAllowShrink, bAllowGrow);
             foreach (Polygon2d hole in solid.Holes) {
-                CurveUtils2.LaplacianSmoothConstrained(hole, alpha, iterations, max_dist, bAllowShrink, bAllowGrow);
+                LaplacianSmoothConstrained(hole, alpha, iterations, max_dist, bAllowShrink, bAllowGrow);
             }
         }
 

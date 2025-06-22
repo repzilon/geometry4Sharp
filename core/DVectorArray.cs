@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -60,7 +57,7 @@ namespace g4
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();// vector.GetEnumerator();
+            return GetEnumerator();// vector.GetEnumerator();
         }
     }
 
@@ -209,7 +206,7 @@ namespace g4
         IEnumerator IEnumerable.GetEnumerator()
         {
             //return vector.GetEnumerator();
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
     public class DVectorArray2d : DVectorArray2<double>

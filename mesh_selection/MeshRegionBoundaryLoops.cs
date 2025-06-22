@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
 
 namespace g4
@@ -23,7 +21,7 @@ namespace g4
 
         public MeshRegionBoundaryLoops(DMesh3 mesh, int[] RegionTris, bool bAutoCompute = true)
         {
-            this.Mesh = mesh;
+            Mesh = mesh;
 
             // make flag set for included triangles
             triangles = new IndexFlagSet(mesh.MaxTriangleID, RegionTris.Length);

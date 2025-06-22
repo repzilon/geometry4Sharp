@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace g4
+﻿namespace g4
 {
 	public struct Segment3d : IParametricCurve3d
     {
@@ -137,7 +132,7 @@ namespace g4
 		}
 
 		public IParametricCurve3d Clone() {
-			return new Segment3d(this.Center, this.Direction, this.Extent);
+			return new Segment3d(Center, Direction, Extent);
 		}
 
 

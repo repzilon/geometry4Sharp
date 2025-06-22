@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Ryan Schmidt (rms@gradientspace.com) - All Rights Reserved
 // Distributed under the Boost Software License, Version 1.0. http://www.boost.org/LICENSE_1_0.txt
 using System;
-using System.Collections.Generic;
 using g4;
 
 namespace gs
@@ -30,7 +29,7 @@ namespace gs
             double merge_r2 = VertexTolerance * VertexTolerance;
 
             // construct hash table for edge midpoints
-            TriCentroids pointset = new TriCentroids() { Mesh = this.Mesh };
+            TriCentroids pointset = new TriCentroids() { Mesh = Mesh };
 			PointSetHashtable hash = new PointSetHashtable(pointset);
             int hashN = (Mesh.TriangleCount > 100000) ? 128 : 64;
 			hash.Build(hashN);

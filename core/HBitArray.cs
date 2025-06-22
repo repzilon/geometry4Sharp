@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 
 
@@ -193,7 +191,7 @@ namespace g4
 
 
         IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
 

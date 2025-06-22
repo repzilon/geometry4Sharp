@@ -209,14 +209,14 @@ namespace g4
         public IParametricCurve2d Clone()
         {
             BezierCurve2 c2 = new BezierCurve2();
-            c2.mDegree = this.mDegree;
-            c2.mNumCtrlPoints = this.mNumCtrlPoints;
+            c2.mDegree = mDegree;
+            c2.mNumCtrlPoints = mNumCtrlPoints;
 
-            c2.mCtrlPoint = (Vector2d[])this.mCtrlPoint.Clone();
-            c2.mDer1CtrlPoint = (Vector2d[])this.mDer1CtrlPoint.Clone();
-            c2.mDer2CtrlPoint = (Vector2d[])this.mDer2CtrlPoint.Clone();
-            c2.mDer3CtrlPoint = (Vector2d[])this.mDer3CtrlPoint.Clone();
-            c2.mChoose = new DenseMatrix(this.mChoose);
+            c2.mCtrlPoint = (Vector2d[])mCtrlPoint.Clone();
+            c2.mDer1CtrlPoint = (Vector2d[])mDer1CtrlPoint.Clone();
+            c2.mDer2CtrlPoint = (Vector2d[])mDer2CtrlPoint.Clone();
+            c2.mDer3CtrlPoint = (Vector2d[])mDer3CtrlPoint.Clone();
+            c2.mChoose = new DenseMatrix(mChoose);
             return c2;
         }
 

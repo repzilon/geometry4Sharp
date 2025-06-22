@@ -38,10 +38,10 @@ namespace g4
         }
 
 
-        public static bool EpsilonEqual(double a, double b, double epsilon = MathUtil.Epsilon) {
+        public static bool EpsilonEqual(double a, double b, double epsilon = Epsilon) {
             return Math.Abs(a - b) <= epsilon;
         }
-        public static bool EpsilonEqual(float a, float b, float epsilon = MathUtil.Epsilonf) {
+        public static bool EpsilonEqual(float a, float b, float epsilon = Epsilonf) {
             return (float)Math.Abs(a - b) <= epsilon;
         }
 
@@ -255,7 +255,7 @@ namespace g4
             vFrom.Normalize();
             vTo.Normalize();
             Vector3f c = vFrom.Cross(vTo);
-            if (c.LengthSquared < MathUtil.ZeroTolerancef) {        // vectors are parallel
+            if (c.LengthSquared < ZeroTolerancef) {        // vectors are parallel
                 return vFrom.Dot(vTo) < 0 ? 180.0f : 0;
             }
             float fSign = Math.Sign(c[nPlaneNormalIdx]);
@@ -268,7 +268,7 @@ namespace g4
             vFrom.Normalize();
             vTo.Normalize();
             Vector3d c = vFrom.Cross(vTo);
-            if (c.LengthSquared < MathUtil.ZeroTolerance) {        // vectors are parallel
+            if (c.LengthSquared < ZeroTolerance) {        // vectors are parallel
                 return vFrom.Dot(vTo) < 0 ? 180.0 : 0;
             }
             double fSign = Math.Sign(c[nPlaneNormalIdx]);
@@ -283,7 +283,7 @@ namespace g4
             vFrom.Normalize();
             vTo.Normalize();
             Vector3f c = Vector3f.Cross(vFrom, vTo);
-            if (c.LengthSquared < MathUtil.ZeroTolerancef) {        // vectors are parallel
+            if (c.LengthSquared < ZeroTolerancef) {        // vectors are parallel
                 return vFrom.Dot(vTo) < 0 ? 180.0f : 0;
             }
             float fSign = Math.Sign(Vector3f.Dot(c, planeN));
@@ -297,7 +297,7 @@ namespace g4
             vFrom.Normalize();
             vTo.Normalize();
             Vector3d c = Vector3d.Cross(vFrom, vTo);
-            if (c.LengthSquared < MathUtil.ZeroTolerance) {        // vectors are parallel
+            if (c.LengthSquared < ZeroTolerance) {        // vectors are parallel
                 return vFrom.Dot(vTo) < 0 ? 180.0 : 0;
             }
             double fSign = Math.Sign(Vector3d.Dot(c, planeN));
@@ -372,11 +372,11 @@ namespace g4
         }
 
         public static float WyvillRise01(float fX) {
-            float d = MathUtil.Clamp(1.0f - fX*fX, 0.0f, 1.0f);
+            float d = Clamp(1.0f - fX*fX, 0.0f, 1.0f);
             return 1 - (d * d * d);
         }
         public static double WyvillRise01(double fX) {
-            double d = MathUtil.Clamp(1.0 - fX*fX, 0.0, 1.0);
+            double d = Clamp(1.0 - fX*fX, 0.0, 1.0);
             return 1 - (d * d * d);
         }
 
@@ -508,8 +508,8 @@ namespace g4
 			double fDot = v1.Dot(v2);
 			double lensqr1 = v1.LengthSquared;
 			double lensqr2 = v2.LengthSquared;
-			double d = MathUtil.Clamp(lensqr1 * lensqr2 - fDot*fDot, 0.0f, Double.MaxValue);
-			if ( d < MathUtil.ZeroTolerance )
+			double d = Clamp(lensqr1 * lensqr2 - fDot*fDot, 0.0f, Double.MaxValue);
+			if ( d < ZeroTolerance )
 				return 0;
 			else
 				return fDot / Math.Sqrt( d );
@@ -520,7 +520,7 @@ namespace g4
 			double fDot = v1.Dot(v2);
 			double lensqr1 = v1.LengthSquared;
 			double lensqr2 = v2.LengthSquared;
-			double d = MathUtil.Clamp(lensqr1 * lensqr2 - fDot*fDot, 0.0f, Double.MaxValue);
+			double d = Clamp(lensqr1 * lensqr2 - fDot*fDot, 0.0f, Double.MaxValue);
 			if ( d == 0 )
 				return 0;
 			return Math.Sqrt(d) / fDot;

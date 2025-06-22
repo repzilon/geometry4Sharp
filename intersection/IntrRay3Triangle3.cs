@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace g4
+﻿namespace g4
 {
     public class IntrRay3Triangle3
     {
@@ -50,7 +45,7 @@ namespace g4
         public bool Find()
         {
             if (Result != IntersectionResult.NotComputed)
-                return (Result != g4.IntersectionResult.NoIntersection);
+                return (Result != IntersectionResult.NoIntersection);
 
             // Compute the offset origin, edges, and normal.
             Vector3d diff = ray.Origin - triangle.V0;

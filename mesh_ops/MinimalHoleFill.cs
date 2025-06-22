@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using g4;
 
 namespace gs
@@ -36,8 +35,8 @@ namespace gs
 
         public MinimalHoleFill(DMesh3 mesh, EdgeLoop fillLoop)
         {
-            this.Mesh = mesh;
-            this.FillLoop = fillLoop;
+            Mesh = mesh;
+            FillLoop = fillLoop;
         }
 
 

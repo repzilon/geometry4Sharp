@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -245,7 +244,7 @@ namespace g4
             }
 
             return new CompactInfo() {
-                MapV = new IndexMap(mapV, this.MaxVertexID)
+                MapV = new IndexMap(mapV, MaxVertexID)
             };
         }
 
@@ -316,7 +315,7 @@ namespace g4
             }
 
             return new CompactInfo() {
-                MapV = new IndexMap(mapV, this.MaxVertexID)
+                MapV = new IndexMap(mapV, MaxVertexID)
             };
         }
 
@@ -501,7 +500,7 @@ namespace g4
         }
 
 
-        [System.Obsolete("GetVtxEdges will be removed in future, use VtxEdgesItr instead")]
+        [Obsolete("GetVtxEdges will be removed in future, use VtxEdgesItr instead")]
         public ReadOnlyCollection<int> GetVtxEdges(int vID) {
             if (vertices_refcount.isValid(vID) == false)
                 return null;
@@ -513,7 +512,7 @@ namespace g4
         }
 
 
-        [System.Obsolete("GetVtxEdgeValence will be removed in future, use GetVtxEdgeCount instead")]
+        [Obsolete("GetVtxEdgeValence will be removed in future, use GetVtxEdgeCount instead")]
         public int GetVtxEdgeValence(int vID) {
             return vertex_edges.Count(vID);
         }
@@ -616,7 +615,7 @@ namespace g4
                 for (int j = 0; j < 3; ++j) {
                     int ei = 4 * triangle_edges[tei + j];
                     int nbr_t = (edges[ei + 2] == tID) ? edges[ei + 3] : edges[ei + 2];
-                    if (nbr_t != DMesh3.InvalidID)
+                    if (nbr_t != InvalidID)
                         yield return nbr_t;
                 }
             }
@@ -1696,7 +1695,7 @@ namespace g4
         public bool IsBoundaryEdge(int eid) {
             return edges[4 * eid + 3] == InvalidID;
         }
-        [System.Obsolete("edge_is_boundary will be removed in future, use IsBoundaryEdge instead")]
+        [Obsolete("edge_is_boundary will be removed in future, use IsBoundaryEdge instead")]
         public bool edge_is_boundary(int eid) {
             return edges[4 * eid + 3] == InvalidID;
         }
@@ -1722,7 +1721,7 @@ namespace g4
         }
 
 
-        [System.Obsolete("vertex_is_boundary will be removed in future, use IsBoundaryVertex instead")]
+        [Obsolete("vertex_is_boundary will be removed in future, use IsBoundaryVertex instead")]
         public bool vertex_is_boundary(int vID) {
             return IsBoundaryVertex(vID);
         }
@@ -1944,7 +1943,7 @@ namespace g4
                 int start_eid = -1;
                 bool start_at_boundary = false;
                 foreach (int eid in vertex_edges.ValueItr(vID)) {
-                    if (edges[4 * eid + 3] == DMesh3.InvalidID) {
+                    if (edges[4 * eid + 3] == InvalidID) {
                         start_at_boundary = true;
                         start_eid = eid;
                         break;
@@ -1973,7 +1972,7 @@ namespace g4
                         break;
                     Index2i next_eid_tris = GetEdgeT(next_eid);
                     int next_tid = (next_eid_tris.a == prev_tid) ? next_eid_tris.b : next_eid_tris.a;
-                    if (next_tid == DMesh3.InvalidID) {
+                    if (next_tid == InvalidID) {
                         break;
                     }
                     prev_eid = next_eid;
@@ -2329,7 +2328,7 @@ namespace g4
                     int t0 = edges[4*eid + 2];
                     replace_tri_vertex(t0, iLastV, iCurV);
                     int t1 = edges[4*eid + 3];
-                    if ( t1 != DMesh3.InvalidID )
+                    if ( t1 != InvalidID )
                         replace_tri_vertex(t1, iLastV, iCurV);
                 }
 
@@ -2436,7 +2435,7 @@ namespace g4
 
                 // replace edge in triangles
                 replace_triangle_edge(edges[kc + 2], iLastE, iCurE);
-                if (edges[kc + 3] != DMesh3.InvalidID)
+                if (edges[kc + 3] != InvalidID)
                     replace_triangle_edge(edges[kc + 3], iLastE, iCurE);
 
                 // shift triangle refcount to new position

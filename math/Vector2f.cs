@@ -1,7 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Text;
 
 #if G3_USING_UNITY
 using UnityEngine;
@@ -68,7 +65,7 @@ namespace g4
                     float invLength = 1 / length;
                     return new Vector2f(x * invLength, y * invLength);
                 } else
-                    return Vector2f.Zero;
+                    return Zero;
             }
         }
 

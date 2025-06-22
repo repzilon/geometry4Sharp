@@ -150,7 +150,7 @@ namespace g4
                 return new Quaterniond(
                     -x * invNorm, -y * invNorm, -z * invNorm, w * invNorm);
             } else 
-                return Quaterniond.Zero;
+                return Zero;
         }
         public static Quaterniond Inverse(Quaterniond q) {
             return q.Inverse();
@@ -235,7 +235,7 @@ namespace g4
         public static Quaterniond FromToConstrained(Vector3d vFrom, Vector3d vTo, Vector3d vAround)
         {
             double fAngle = MathUtil.PlaneAngleSignedD(vFrom, vTo, vAround);
-            return Quaterniond.AxisAngleD(vAround, fAngle);
+            return AxisAngleD(vAround, fAngle);
         }
 
 

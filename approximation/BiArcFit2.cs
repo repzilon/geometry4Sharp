@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -362,12 +360,12 @@ namespace g4
 
         public void DebugPrint()
         {
-            System.Console.WriteLine("biarc fit Pt0 {0} Pt1 {1}  Tan0 {2} Tan1 {3}", Point1, Point2, Tangent1, Tangent2);
-            System.Console.WriteLine("  First: Start {0} End {1}  {2}",
+            Console.WriteLine("biarc fit Pt0 {0} Pt1 {1}  Tan0 {2} Tan1 {3}", Point1, Point2, Tangent1, Tangent2);
+            Console.WriteLine("  First: Start {0} End {1}  {2}",
                 (Arc1IsSegment) ? Segment1.P0 : Arc1.SampleT(0),
                 (Arc1IsSegment) ? Segment1.P1 : Arc1.SampleT(1),
                 (Arc1IsSegment) ? "segment" : "arc");
-            System.Console.WriteLine("  Second: Start {0} End {1}  {2}",
+            Console.WriteLine("  Second: Start {0} End {1}  {2}",
                 (Arc2IsSegment) ? Segment2.P0 : Arc2.SampleT(0),
                 (Arc2IsSegment) ? Segment2.P1 : Arc2.SampleT(1),
                 (Arc2IsSegment) ? "segment" : "arc");

@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Ryan Schmidt (rms@gradientspace.com) - All Rights Reserved
 // Distributed under the Boost Software License, Version 1.0. http://www.boost.org/LICENSE_1_0.txt
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using g4;
 
@@ -127,7 +124,7 @@ namespace gs
 
             // now do queued remesh iterations. 
             // disable projection every other iteration to improve speed
-            var saveMode = this.ProjectionMode;
+            var saveMode = ProjectionMode;
             for (int k = 0; k < nMaxIterations - 1; ++k) {
                 if (Cancelled())
                     break;
@@ -694,15 +691,15 @@ namespace gs
         public void PushState()
         {
             SettingState s = new SettingState() {
-                EnableFlips = this.EnableFlips,
-                EnableCollapses = this.EnableCollapses,
-                EnableSplits = this.EnableSplits,
-                EnableSmoothing = this.EnableSmoothing,
-                MinEdgeLength = this.MinEdgeLength,
-                MaxEdgeLength = this.MaxEdgeLength,
-                SmoothSpeedT = this.SmoothSpeedT,
-                SmoothType = this.SmoothType,
-                ProjectionMode = this.ProjectionMode
+                EnableFlips = EnableFlips,
+                EnableCollapses = EnableCollapses,
+                EnableSplits = EnableSplits,
+                EnableSmoothing = EnableSmoothing,
+                MinEdgeLength = MinEdgeLength,
+                MaxEdgeLength = MaxEdgeLength,
+                SmoothSpeedT = SmoothSpeedT,
+                SmoothType = SmoothType,
+                ProjectionMode = ProjectionMode
             };
             stateStack.Add(s);
         }
@@ -712,15 +709,15 @@ namespace gs
             SettingState s = stateStack.Last();
             stateStack.RemoveAt(stateStack.Count - 1);
 
-            this.EnableFlips = s.EnableFlips;
-            this.EnableCollapses = s.EnableCollapses;
-            this.EnableSplits = s.EnableSplits;
-            this.EnableSmoothing = s.EnableSmoothing;
-            this.MinEdgeLength = s.MinEdgeLength;
-            this.MaxEdgeLength = s.MaxEdgeLength;
-            this.SmoothSpeedT = s.SmoothSpeedT;
-            this.SmoothType = s.SmoothType;
-            this.ProjectionMode = s.ProjectionMode;
+            EnableFlips = s.EnableFlips;
+            EnableCollapses = s.EnableCollapses;
+            EnableSplits = s.EnableSplits;
+            EnableSmoothing = s.EnableSmoothing;
+            MinEdgeLength = s.MinEdgeLength;
+            MaxEdgeLength = s.MaxEdgeLength;
+            SmoothSpeedT = s.SmoothSpeedT;
+            SmoothType = s.SmoothType;
+            ProjectionMode = s.ProjectionMode;
         }
 
         

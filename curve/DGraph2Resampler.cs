@@ -17,7 +17,7 @@ namespace g4
 
         public DGraph2Resampler(DGraph2 graph)
         {
-            this.Graph = graph;
+            Graph = graph;
         }
 
 

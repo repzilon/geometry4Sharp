@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace g4
+﻿namespace g4
 {
     public class DCurveProjectionTarget : IProjectionTarget
     {
@@ -12,7 +7,7 @@ namespace g4
 
         public DCurveProjectionTarget(DCurve3 curve)
         {
-            this.Curve = curve;
+            Curve = curve;
         }
 
         public Vector3d Project(Vector3d vPoint, int identifier = -1)

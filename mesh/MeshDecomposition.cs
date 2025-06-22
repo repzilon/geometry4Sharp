@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 
 namespace g4
@@ -51,7 +49,7 @@ namespace g4
             MaxComponentSize = 62000;      // max for unity is 64
 
             this.mesh = mesh;
-            this.Manager = manager;
+            Manager = manager;
         }
 
 

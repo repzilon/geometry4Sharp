@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace g4
 {
@@ -208,7 +207,7 @@ namespace g4
                 if (v0 == v1)
                     continue;
                 if (Math.Abs(points[k].t - points[k + 1].t) < MathUtil.Epsilonf)
-                    System.Console.WriteLine("insert_segment: different points with same t??");
+                    Console.WriteLine("insert_segment: different points with same t??");
 
                 if (Graph.FindEdge(v0, v1) == DGraph2.InvalidID)
                     Graph.AppendEdge(v0, v1, gid);

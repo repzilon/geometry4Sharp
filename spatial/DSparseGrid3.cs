@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -58,7 +56,7 @@ namespace g4
         /// </summary>
         public DSparseGrid3(ElemType toDuplicate)
         {
-            this.exemplar = toDuplicate;
+            exemplar = toDuplicate;
             elements = new Dictionary<Vector3i, ElemType>();
             bounds = AxisAlignedBox3i.Empty;
         }

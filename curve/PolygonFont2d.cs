@@ -107,7 +107,7 @@ namespace g4
             using (FileStream file_stream = File.Open(filename, FileMode.Open)) {
                 BinaryReader binReader = new BinaryReader(file_stream);
                 PolygonFont2d newfont = new PolygonFont2d();
-                PolygonFont2d.Restore(newfont, binReader);
+                Restore(newfont, binReader);
                 return newfont;
             }
         }
@@ -115,7 +115,7 @@ namespace g4
         {
             BinaryReader binReader = new BinaryReader(s);
             PolygonFont2d newfont = new PolygonFont2d();
-            PolygonFont2d.Restore(newfont, binReader);
+            Restore(newfont, binReader);
             return newfont;
         }
 

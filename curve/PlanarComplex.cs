@@ -45,11 +45,11 @@ namespace g4
 
             protected void copy_to(Element new_element)
             {
-                new_element.ID = this.ID;
-                new_element.color = this.color;
-                new_element.has_set_color = this.has_set_color;
+                new_element.ID = ID;
+                new_element.color = color;
+                new_element.has_set_color = has_set_color;
                 if (source != null)
-                    new_element.source = this.source.Clone();
+                    new_element.source = source.Clone();
             }
 
 			public abstract IEnumerable<Segment2d> SegmentItr();
@@ -70,8 +70,8 @@ namespace g4
 
             public override Element Clone() {
                 SmoothCurveElement curve = new SmoothCurveElement();
-                this.copy_to(curve);
-                curve.polyLine = (this.polyLine == this.source) ? curve.source as PolyLine2d : new PolyLine2d(this.polyLine);
+                copy_to(curve);
+                curve.polyLine = (polyLine == source) ? curve.source as PolyLine2d : new PolyLine2d(polyLine);
                 return curve;
             }
 		}
@@ -90,8 +90,8 @@ namespace g4
             public override Element Clone()
             {
                 SmoothLoopElement loop = new SmoothLoopElement();
-                this.copy_to(loop);
-                loop.polygon = (this.polygon == this.source) ? loop.source as Polygon2d : new Polygon2d(this.polygon);
+                copy_to(loop);
+                loop.polygon = (polygon == source) ? loop.source as Polygon2d : new Polygon2d(polygon);
                 return loop;
             }
         }
@@ -881,11 +881,11 @@ namespace g4
         public PlanarComplex Clone()
         {
             PlanarComplex clone = new PlanarComplex();
-            clone.DistanceAccuracy = this.DistanceAccuracy;
-            clone.AngleAccuracyDeg = this.AngleAccuracyDeg;
-            clone.SpacingT = this.SpacingT;
-            clone.MinimizeSampling = this.MinimizeSampling;
-            clone.id_generator = this.id_generator;
+            clone.DistanceAccuracy = DistanceAccuracy;
+            clone.AngleAccuracyDeg = AngleAccuracyDeg;
+            clone.SpacingT = SpacingT;
+            clone.MinimizeSampling = MinimizeSampling;
+            clone.id_generator = id_generator;
 
             clone.vElements = new List<Element>(vElements.Count);
             foreach ( var element in vElements )
@@ -900,7 +900,7 @@ namespace g4
         public void Append(PlanarComplex append)
         {
             foreach ( var element in append.vElements ) {
-                element.ID = this.id_generator++;
+                element.ID = id_generator++;
                 vElements.Add(element);
             }
 
@@ -945,15 +945,15 @@ namespace g4
 
 
 		public void PrintStats(string label = "") {
-			System.Console.WriteLine("PlanarComplex Stats {0}", label);
+			Console.WriteLine("PlanarComplex Stats {0}", label);
 			List<SmoothLoopElement> Loops = new List<SmoothLoopElement>(LoopsItr());
 			List<SmoothCurveElement> Curves = new List<SmoothCurveElement>(CurvesItr());
 
             AxisAlignedBox2d bounds = Bounds();
-            System.Console.WriteLine("  Bounding Box  w: {0} h: {1}  range {2} ", bounds.Width, bounds.Height, bounds);
+            Console.WriteLine("  Bounding Box  w: {0} h: {1}  range {2} ", bounds.Width, bounds.Height, bounds);
 
 			List<ComplexEndpoint2d> vEndpoints = new List<ComplexEndpoint2d>(EndpointsItr());
-            System.Console.WriteLine("  Closed Loops {0}  Open Curves {1}   Open Endpoints {2}",
+            Console.WriteLine("  Closed Loops {0}  Open Curves {1}   Open Endpoints {2}",
                 Loops.Count, Curves.Count, vEndpoints.Count);
 
             int nSegments = CountType( typeof(Segment2d) );
@@ -963,9 +963,9 @@ namespace g4
             int nEllipses = CountType(typeof(Ellipse2d));
             int nEllipseArcs = CountType(typeof(EllipseArc2d));
             int nSeqs = CountType(typeof(ParametricCurveSequence2));
-            System.Console.WriteLine("  [Type Counts]   // {0} multi-curves", nSeqs);
-            System.Console.WriteLine("    segments {0,4}  arcs     {1,4}  circles      {2,4}", nSegments, nArcs, nCircles);
-            System.Console.WriteLine("    nurbs    {0,4}  ellipses {1,4}  ellipse-arcs {2,4}", nNURBS, nEllipses, nEllipseArcs);
+            Console.WriteLine("  [Type Counts]   // {0} multi-curves", nSeqs);
+            Console.WriteLine("    segments {0,4}  arcs     {1,4}  circles      {2,4}", nSegments, nArcs, nCircles);
+            Console.WriteLine("    nurbs    {0,4}  ellipses {1,4}  ellipse-arcs {2,4}", nNURBS, nEllipses, nEllipseArcs);
 		}
         public int CountType(Type t)
         {

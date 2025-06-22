@@ -222,8 +222,8 @@ namespace g4
 		}
 
         public IParametricCurve2d Clone() {
-            return new Ellipse2d(this.Center, this.Axis0, this.Axis1, this.Extent)
-                { IsReversed = this.IsReversed };
+            return new Ellipse2d(Center, Axis0, Axis1, Extent)
+                { IsReversed = IsReversed };
         }
 
 

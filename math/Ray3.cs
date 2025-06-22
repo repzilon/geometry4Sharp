@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-#if G3_USING_UNITY
+﻿#if G3_USING_UNITY
 using UnityEngine;
 #endif
 
@@ -16,17 +11,17 @@ namespace g4
 
         public Ray3d(Vector3d origin, Vector3d direction, bool bIsNormalized = false)
         {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
             if (bIsNormalized == false && Direction.IsNormalized == false)
                 Direction.Normalize();
         }
 
         public Ray3d(Vector3f origin, Vector3f direction)
         {
-            this.Origin = origin;
-            this.Direction = direction;
-            this.Direction.Normalize();     // float cast may not be normalized in double, is trouble in algorithms!
+            Origin = origin;
+            Direction = direction;
+            Direction.Normalize();     // float cast may not be normalized in double, is trouble in algorithms!
         }
 
         // parameter is distance along ray
@@ -95,8 +90,8 @@ namespace g4
 
         public Ray3f(Vector3f origin, Vector3f direction, bool bIsNormalized = false)
         {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
             if (bIsNormalized == false && Direction.IsNormalized == false)
                 Direction.Normalize();
         }

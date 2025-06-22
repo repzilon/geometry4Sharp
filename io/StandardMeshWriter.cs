@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
-using System.Globalization;
 
 namespace g4
 {
@@ -56,7 +56,7 @@ namespace g4
 
         static public IOWriteResult WriteMeshes(string sFilename, List<DMesh3> vMeshes, WriteOptions options)
         {
-            List<WriteMesh> meshes = new List<g4.WriteMesh>();
+            List<WriteMesh> meshes = new List<WriteMesh>();
             foreach (var m in vMeshes)
                 meshes.Add(new WriteMesh(m));
             StandardMeshWriter writer = new StandardMeshWriter();
@@ -128,8 +128,8 @@ namespace g4
             try {
                 StreamWriter w = new StreamWriter(stream);
                 OBJWriter writer = new OBJWriter() {
-                    OpenStreamF = this.OpenStreamF,
-                    CloseStreamF = this.CloseStreamF
+                    OpenStreamF = OpenStreamF,
+                    CloseStreamF = CloseStreamF
                 };
                 var result = writer.Write(w, vMeshes, options);
                 w.Flush();

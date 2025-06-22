@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -149,7 +146,7 @@ namespace g4
 		}
 
         public IParametricCurve2d Clone() {
-            return new Segment2d(this.Center, this.Direction, this.Extent);
+            return new Segment2d(Center, Direction, Extent);
         }
 
         public bool IsTransformable { get { return true; } }

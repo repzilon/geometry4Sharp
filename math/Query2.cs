@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace g4
 {
@@ -40,7 +39,7 @@ namespace g4
 
         public Query2d(IList<Vector2d> Vertices)
         {
-            this.mVertices = Vertices;
+            mVertices = Vertices;
         }
 
 

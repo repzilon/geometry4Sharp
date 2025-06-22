@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -34,7 +31,7 @@ namespace g4
 
 		public DistLine3Segment3( Line3d LineIn, Segment3d SegmentIn)
 		{
-			this.segment = SegmentIn; this.line = LineIn;
+			segment = SegmentIn; line = LineIn;
 		}
 
 		static public double MinDistance(Line3d line, Segment3d segment)

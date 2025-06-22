@@ -112,9 +112,9 @@ namespace g4
             return this == other;
         }
         public int CompareTo(AxisAlignedBox2i other) {
-            int c = this.Min.CompareTo(other.Min);
+            int c = Min.CompareTo(other.Min);
             if (c == 0)
-                return this.Max.CompareTo(other.Max);
+                return Max.CompareTo(other.Max);
             return c;
         }
         public override int GetHashCode() {
@@ -194,7 +194,7 @@ namespace g4
                 Math.Max(Min.x, box.Min.x), Math.Max(Min.y, box.Min.y), 
                 Math.Min(Max.x, box.Max.x), Math.Min(Max.y, box.Max.y) );
             if (intersect.Height <= 0 || intersect.Width <= 0)
-                return AxisAlignedBox2i.Empty;
+                return Empty;
             else
                 return intersect;
         }

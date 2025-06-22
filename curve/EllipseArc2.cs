@@ -77,7 +77,7 @@ namespace g4
 			double sint = Math.Sin(theta);
 
 			// [RMS] adapted this formula from dxf.net. 
-			double a = this.Extent.x, b = this.Extent.y;
+			double a = Extent.x, b = Extent.y;
 			double a1 = a * sint;
 			double b1 = b * cost;
 			double radius = (a*b) / Math.Sqrt(b1*b1 + a1*a1);
@@ -100,7 +100,7 @@ namespace g4
 			double sint = Math.Sin(theta);
 
 			// [RMS] adapted this formula from dxf.net. 
-			double a = this.Extent.x, b = this.Extent.y;
+			double a = Extent.x, b = Extent.y;
 			double a1 = a * sint;
 			double b1 = b * cost;
 
@@ -141,8 +141,8 @@ namespace g4
 		}
 
         public IParametricCurve2d Clone() {
-            return new EllipseArc2d(this.Center, this.Axis0, this.Axis1, this.Extent, this.AngleStartDeg, this.AngleEndDeg)
-                { IsReversed = this.IsReversed };
+            return new EllipseArc2d(Center, Axis0, Axis1, Extent, AngleStartDeg, AngleEndDeg)
+                { IsReversed = IsReversed };
         }
 
 

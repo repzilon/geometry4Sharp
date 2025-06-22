@@ -113,9 +113,9 @@ namespace g4
             return this == other;
         }
         public int CompareTo(AxisAlignedBox3d other) {
-            int c = this.Min.CompareTo(other.Min);
+            int c = Min.CompareTo(other.Min);
             if (c == 0)
-                return this.Max.CompareTo(other.Max);
+                return Max.CompareTo(other.Max);
             return c;
         }
         public override int GetHashCode() {
@@ -240,7 +240,7 @@ namespace g4
                 Math.Max(Min.x, box.Min.x), Math.Max(Min.y, box.Min.y), Math.Max(Min.z, box.Min.z),
                 Math.Min(Max.x, box.Max.x), Math.Min(Max.y, box.Max.y), Math.Min(Max.z, box.Max.z));
             if (intersect.Height <= 0 || intersect.Width <= 0 || intersect.Depth <= 0)
-                return AxisAlignedBox3d.Empty;
+                return Empty;
             else
                 return intersect;
         }

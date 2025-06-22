@@ -533,11 +533,11 @@ namespace g4
                     // determine which entries of squared matrix might be nonzeros
                     HashSet<int> nbrs = new HashSet<int>();
                     nbrs.Add(r1i);
-                    PackedSparseMatrix.nonzero[] row = Rows[r1i];
+                    nonzero[] row = Rows[r1i];
                     for (int k = 0; k < row.Length; ++k) {
                         if (row[k].j > r1i)
                             nbrs.Add(row[k].j);
-                        PackedSparseMatrix.nonzero[] row2 = Rows[row[k].j];
+                        nonzero[] row2 = Rows[row[k].j];
                         for (int j = 0; j < row2.Length; ++j) {
                             if (row2[j].j > r1i)     // only compute lower-triangular entries
                                 nbrs.Add(row2[j].j);

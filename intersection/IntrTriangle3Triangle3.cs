@@ -31,7 +31,7 @@ namespace g4
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool NotEqual(double value1, double value2)
         {
-            return System.Math.Abs(value1 - value2) > PRECISION;
+            return Math.Abs(value1 - value2) > PRECISION;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace g4
         public bool Find()
         {
             if (Result != IntersectionResult.NotComputed)
-                return (Result != g4.IntersectionResult.NoIntersection);
+                return (Result != IntersectionResult.NoIntersection);
 
 
             // in this code the results get initialized in subroutines, so we

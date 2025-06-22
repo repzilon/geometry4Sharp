@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace g4.core
 {
@@ -51,13 +48,13 @@ namespace g4.core
 
             public int meshIndex;
             public int index;
-            public g4.Frame3f frame;
-            public g4.Index3i neighbors_index;
-            public g4.Index3i vertex_index;
+            public Frame3f frame;
+            public Index3i neighbors_index;
+            public Index3i vertex_index;
             public List<MeshNode> neighbors = new List<MeshNode>();
             public bool locked = false;
 
-            internal MeshNode(int i, int fi, g4.Frame3f f, g4.Index3i neighbors_index, g4.Index3i vertex_index)
+            internal MeshNode(int i, int fi, Frame3f f, Index3i neighbors_index, Index3i vertex_index)
             {
                 frame = f;
                 this.neighbors_index = neighbors_index;
@@ -72,13 +69,13 @@ namespace g4.core
 
             }
 
-            internal bool Randomize(g4.DMesh3 mesh, DMeshAABBTree3 tree, Random r, double max, double moveTries, double average)
+            internal bool Randomize(DMesh3 mesh, DMeshAABBTree3 tree, Random r, double max, double moveTries, double average)
             {
                 bool result = false;
 
                 for (int i = 0; i < moveTries; i++)
                 {
-                    result |= this.RandomAdjust(mesh, tree, r, max, moveTries, average);
+                    result |= RandomAdjust(mesh, tree, r, max, moveTries, average);
 
                     //foreach (var n in neighbors)
                     //    result |= n.RandomAdjust(mesh, tree, r, max, moveTries, average);
@@ -87,9 +84,9 @@ namespace g4.core
                 return result;
             }
 
-            internal double CompuateAverageArea(g4.DMesh3 mesh)
+            internal double CompuateAverageArea(DMesh3 mesh)
             {
-                double area = this.TriangleArea(mesh);
+                double area = TriangleArea(mesh);
 
                 foreach (var n in neighbors)
                     area += n.TriangleArea(mesh);
@@ -99,9 +96,9 @@ namespace g4.core
                 return area;
             }
 
-            internal double HowCloseToTargetArea(g4.DMesh3 mesh, double targetArea, int depth)
+            internal double HowCloseToTargetArea(DMesh3 mesh, double targetArea, int depth)
             {
-                double area = Math.Pow(Math.Abs(this.TriangleArea(mesh) - targetArea) / targetArea, 3) * 3;
+                double area = Math.Pow(Math.Abs(TriangleArea(mesh) - targetArea) / targetArea, 3) * 3;
 
                 if (depth == 0)
                     return area;
@@ -112,12 +109,12 @@ namespace g4.core
                 return area / (neighbors.Count + 1);
             }
 
-            internal double TriangleArea(g4.DMesh3 mesh)
+            internal double TriangleArea(DMesh3 mesh)
             {
                 return mesh.GetTriArea(meshIndex);
             }
 
-            internal double GetTriangleAnglesQuality(g4.DMesh3 mesh)
+            internal double GetTriangleAnglesQuality(DMesh3 mesh)
             {
                 Vector3d v0 = Vector3d.Zero, v1 = Vector3d.Zero, v2 = Vector3d.Zero;
                 mesh.GetTriVertices(meshIndex, ref v0, ref v1, ref v2);
@@ -147,7 +144,7 @@ namespace g4.core
                 return Math.Pow(result, 3);
             }
 
-            internal double GetTriangleTotalAnglesQualityHelper(g4.DMesh3 mesh, int depth)
+            internal double GetTriangleTotalAnglesQualityHelper(DMesh3 mesh, int depth)
             {
                 double total = GetTriangleAnglesQuality(mesh);
 
@@ -160,7 +157,7 @@ namespace g4.core
                 return total / (neighbors.Count + 1);
             }
 
-            double GetNormalQuality(g4.DMesh3 mesh, g4.Vector3d target, int depth)
+            double GetNormalQuality(DMesh3 mesh, Vector3d target, int depth)
             {
                 if (depth == 0)
                     return 1 - (mesh.GetTriNormal(meshIndex).Dot(target));
@@ -173,11 +170,11 @@ namespace g4.core
                 return amount;
             }
 
-            internal bool RandomAdjust(g4.DMesh3 mesh, DMeshAABBTree3 tree, Random r, double max, double moveTries, double targetArea)
+            internal bool RandomAdjust(DMesh3 mesh, DMeshAABBTree3 tree, Random r, double max, double moveTries, double targetArea)
             {
                 bool moved = false;
 
-                if (this.locked)
+                if (locked)
                     return false;
 
                 for (int i = 0; i < moveTries; i++)
@@ -247,17 +244,17 @@ namespace g4.core
             }
         }
 
-        public static bool RandomizeMesh(g4.DMesh3 mesh, out g4.DMesh3 outputMesh, double amount, double moveTries)
+        public static bool RandomizeMesh(DMesh3 mesh, out DMesh3 outputMesh, double amount, double moveTries)
         {
-            System.Collections.Generic.SortedDictionary<int, MeshNode> faces = new System.Collections.Generic.SortedDictionary<int, MeshNode>();
+            SortedDictionary<int, MeshNode> faces = new SortedDictionary<int, MeshNode>();
 
             int index = 0;
             foreach (var meshFaceIndex in mesh.TriangleIndices())
             {
                 var frame = mesh.GetTriFrame(meshFaceIndex);
 
-                g4.Index3i neighbors = mesh.GetTriNeighbourTris(meshFaceIndex);
-                g4.Index3i vertex_index = mesh.GetTriangle(meshFaceIndex);
+                Index3i neighbors = mesh.GetTriNeighbourTris(meshFaceIndex);
+                Index3i vertex_index = mesh.GetTriangle(meshFaceIndex);
 
                 faces.Add(meshFaceIndex, new MeshNode(index++, meshFaceIndex, frame, neighbors, vertex_index));
             }
@@ -322,17 +319,17 @@ namespace g4.core
             return result;
         }
 
-        public static void VoronoiMesh(g4.DMesh3 mesh, out g4.DMesh3 outputMesh, out List<g4.Line3d> listLines, out List<g4.PolyLine3d> listPolylines)
+        public static void VoronoiMesh(DMesh3 mesh, out DMesh3 outputMesh, out List<Line3d> listLines, out List<PolyLine3d> listPolylines)
         {
-            System.Collections.Generic.SortedDictionary<int, MeshNode> faces = new System.Collections.Generic.SortedDictionary<int, MeshNode>();
+            SortedDictionary<int, MeshNode> faces = new SortedDictionary<int, MeshNode>();
 
             int index = 0;
             foreach (var meshFaceIndex in mesh.TriangleIndices())
             {
                 var frame = mesh.GetTriFrame(meshFaceIndex);
 
-                g4.Index3i neighbors = mesh.GetTriNeighbourTris(meshFaceIndex);
-                g4.Index3i vertex_index = mesh.GetTriangle(meshFaceIndex);
+                Index3i neighbors = mesh.GetTriNeighbourTris(meshFaceIndex);
+                Index3i vertex_index = mesh.GetTriangle(meshFaceIndex);
 
                 faces.Add(meshFaceIndex, new MeshNode(index++, meshFaceIndex, frame, neighbors, vertex_index));
             }
@@ -358,9 +355,9 @@ namespace g4.core
                 }
             }
 
-            outputMesh = new g4.DMesh3(g4.MeshComponents.None);
-            listLines = new List<g4.Line3d>();
-            listPolylines = new List<g4.PolyLine3d>();
+            outputMesh = new DMesh3(MeshComponents.None);
+            listLines = new List<Line3d>();
+            listPolylines = new List<PolyLine3d>();
             foreach (var f in faces)
             {
                 outputMesh.AppendVertex(f.Value.frame.Origin);
@@ -417,11 +414,11 @@ namespace g4.core
                     {
                         processedPoints.Add(checkVertex);
 
-                        var polyline = new g4.PolyLine3d();
+                        var polyline = new PolyLine3d();
 
                         if (outputLine.Count > 2)
                         {
-                            g4.Vector3d centerPoint = f.Value.frame.Origin;
+                            Vector3d centerPoint = f.Value.frame.Origin;
 
                             foreach (var p in outputLine)
                                 centerPoint += outputMesh.GetVertex(p);
@@ -439,7 +436,7 @@ namespace g4.core
                             polyline.AppendVertex(pS);
                             polyline.AppendVertex(p0);
 
-                            listLines.Add(new g4.Line3d(pS, p0 - pS));
+                            listLines.Add(new Line3d(pS, p0 - pS));
 
                             var n = MathUtil.Normal(centerPoint, pS, p0);
 
@@ -455,7 +452,7 @@ namespace g4.core
                                 var p1 = outputMesh.GetVertex(outputLine[j]);
                                 var p2 = outputMesh.GetVertex(outputLine[j + 1]);
 
-                                listLines.Add(new g4.Line3d(p1, p2 - p1));
+                                listLines.Add(new Line3d(p1, p2 - p1));
                                 polyline.AppendVertex(p2);
 
                                 if (!reverseTri)
@@ -465,7 +462,7 @@ namespace g4.core
                             }
 
                             polyline.AppendVertex(pS);
-                            listLines.Add(new g4.Line3d(pE, pS - pE));
+                            listLines.Add(new Line3d(pE, pS - pE));
 
                             listPolylines.Add(polyline);
 

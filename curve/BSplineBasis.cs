@@ -82,11 +82,11 @@ namespace g4
         public BSplineBasis Clone()
         {
             BSplineBasis b2 = new BSplineBasis();
-            b2.mNumCtrlPoints = this.mNumCtrlPoints;
-            b2.mDegree = this.mDegree;
-            b2.mKnot = (double[])this.mKnot.Clone();
-            b2.mOpen = this.mOpen;
-            b2.mUniform = this.mUniform;
+            b2.mNumCtrlPoints = mNumCtrlPoints;
+            b2.mDegree = mDegree;
+            b2.mKnot = (double[])mKnot.Clone();
+            b2.mOpen = mOpen;
+            b2.mUniform = mUniform;
             return b2;
         }
 

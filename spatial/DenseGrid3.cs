@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 
 namespace g4
@@ -36,8 +34,8 @@ namespace g4
         {
             Util.gDevAssert(ni == g2.ni && nj == g2.nj && nk == g2.nk);
             var tmp = g2.Buffer;
-            g2.Buffer = this.Buffer;
-            this.Buffer = tmp;
+            g2.Buffer = Buffer;
+            Buffer = tmp;
         }
 
         public int size { get { return ni * nj * nk; } }

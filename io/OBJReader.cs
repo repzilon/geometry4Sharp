@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 
 namespace g4
 {
@@ -100,8 +99,8 @@ namespace g4
 
         public OBJReader()
         {
-            this.splitDoubleSlash = new string[] { "//" };
-            this.splitSlash = new char[] { '/' };
+            splitDoubleSlash = new string[] { "//" };
+            splitSlash = new char[] { '/' };
             MTLFileSearchPaths = new List<string>();
         }
 
@@ -511,11 +510,11 @@ namespace g4
 
                 } else if (nMode == 1) {
                     // "f v1//vn1 v2//vn2 v3//vn3"
-                    string[] parts = tokens[ti + 1].Split(this.splitDoubleSlash, StringSplitOptions.RemoveEmptyEntries);
+                    string[] parts = tokens[ti + 1].Split(splitDoubleSlash, StringSplitOptions.RemoveEmptyEntries);
                     t.set_vertex(j, parse_v(parts[0]), parse_n(parts[1]));
 
                 } else if (nMode == 2) {
-                    string[] parts = tokens[ti + 1].Split(this.splitSlash, StringSplitOptions.RemoveEmptyEntries);
+                    string[] parts = tokens[ti + 1].Split(splitSlash, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length == 2) {
                         // "f v1/vt1 v2/vt2 v3/vt3"
                         t.set_vertex(j, parse_v(parts[0]), -1, parse_u(parts[1]));
@@ -558,11 +557,11 @@ namespace g4
 
                 } else if (nMode == 1) {
                     // "f v1//vn1 v2//vn2 v3//vn3"
-                    string[] parts = tokens[j + 1].Split(this.splitDoubleSlash, StringSplitOptions.RemoveEmptyEntries);
+                    string[] parts = tokens[j + 1].Split(splitDoubleSlash, StringSplitOptions.RemoveEmptyEntries);
                     t.set_vertex(j, parse_v(parts[0]), parse_n(parts[1]));
 
                 } else if (nMode == 2) {
-                    string[] parts = tokens[j + 1].Split(this.splitSlash, StringSplitOptions.RemoveEmptyEntries);
+                    string[] parts = tokens[j + 1].Split(splitSlash, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length == 2) {
                         // "f v1/vt1 v2/vt2 v3/vt3"
                         t.set_vertex(j, parse_v(parts[0]), -1, parse_u(parts[1]));

@@ -26,15 +26,15 @@ namespace g4
         public DCurve3(List<Vector3d> verticesIn, bool bClosed, bool bTakeOwnership = false)
         {
             if (bTakeOwnership)
-                this.vertices = verticesIn;
+                vertices = verticesIn;
             else
-                this.vertices = new List<Vector3d>(verticesIn);
+                vertices = new List<Vector3d>(verticesIn);
             Closed = bClosed;
             Timestamp = 1;
         }
         public DCurve3(IEnumerable<Vector3d> verticesIn, bool bClosed)
         {
-            this.vertices = new List<Vector3d>(verticesIn);
+            vertices = new List<Vector3d>(verticesIn);
             Closed = bClosed;
             Timestamp = 1;
         }
@@ -48,7 +48,7 @@ namespace g4
 
         public DCurve3(ISampledCurve3d icurve)
         {
-            this.vertices = new List<Vector3d>(icurve.Vertices);
+            vertices = new List<Vector3d>(icurve.Vertices);
             Closed = icurve.Closed;
             Timestamp = 1;
         }
@@ -56,11 +56,11 @@ namespace g4
         public DCurve3(Polygon2d poly, int ix = 0, int iy = 1)
         {
             int NV = poly.VertexCount;
-            this.vertices = new List<Vector3d>(NV);
+            vertices = new List<Vector3d>(NV);
             for (int k = 0; k < NV; ++k) {
                 Vector3d v = Vector3d.Zero;
                 v[ix] = poly[k].x; v[iy] = poly[k].y;
-                this.vertices.Add(v);
+                vertices.Add(v);
             }
             Closed = true;
             Timestamp = 1;
@@ -310,7 +310,7 @@ namespace g4
         public DCurve3 ResampleSharpTurns(double sharp_thresh = 90, double flat_thresh = 189, double corner_t = 0.01)
         {
             int NV = vertices.Count;
-            DCurve3 resampled = new DCurve3() { Closed = this.Closed };
+            DCurve3 resampled = new DCurve3() { Closed = Closed };
             double prev_t = 1.0 - corner_t;
             for (int k = 0; k < NV; ++k) {
                 double open_angle = Math.Abs(OpeningAngleDeg(k));

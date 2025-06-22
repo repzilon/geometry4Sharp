@@ -70,7 +70,7 @@ namespace g4
                     double invLength = 1 / length;
                     return new Vector2d(x * invLength, y * invLength);
                 } else
-                    return Vector2d.Zero;
+                    return Zero;
             }
         }
 
@@ -392,8 +392,8 @@ namespace g4
             // Test whether the point set is (nearly) a point.
             if (info.mMaxRange < epsilon) {
                 info.mDimension = 0;
-                info.mDirection0 = Vector2d.Zero;
-                info.mDirection1 = Vector2d.Zero;
+                info.mDirection0 = Zero;
+                info.mDirection1 = Zero;
                 for (j = 0; j < 2; ++j) 
                     info.mExtreme[j + 1] = info.mExtreme[0];
                 return;

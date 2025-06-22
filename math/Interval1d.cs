@@ -10,10 +10,10 @@ namespace g4
 		public double b;
 
         public Interval1d(double f) { a = b = f; }
-        public Interval1d(double x, double y) { this.a = x; this.b = y; }
+        public Interval1d(double x, double y) { a = x; b = y; }
         public Interval1d(double[] v2) { a = v2[0]; b = v2[1]; }
         public Interval1d(float f) { a = b = f; }
-        public Interval1d(float x, float y) { this.a = x; this.b = y; }
+        public Interval1d(float x, float y) { a = x; b = y; }
         public Interval1d(float[] v2) { a = v2[0]; b = v2[1]; }
         public Interval1d(Interval1d copy) { a = copy.a; b = copy.b; }
 
@@ -87,7 +87,7 @@ namespace g4
         public Interval1d IntersectionWith(ref Interval1d o)
         {
             if (o.a > b || o.b < a)
-                return Interval1d.Empty;
+                return Empty;
             return new Interval1d(Math.Max(a, o.a), Math.Min(b, o.b));
         }
 

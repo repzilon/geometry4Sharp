@@ -133,8 +133,8 @@ namespace g4
 		}
 
         public IParametricCurve2d Clone() {
-            return new Arc2d(this.Center, this.Radius, this.AngleStartDeg, this.AngleEndDeg) 
-                { IsReversed = this.IsReversed };
+            return new Arc2d(Center, Radius, AngleStartDeg, AngleEndDeg) 
+                { IsReversed = IsReversed };
         }
 
 

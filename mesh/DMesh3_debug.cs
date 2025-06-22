@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Collections.Generic;
 
 namespace g4
 {
@@ -29,17 +29,17 @@ namespace g4
         }
 
         public void debug_print_vertex(int v) {
-			System.Console.WriteLine("Vertex " + v.ToString());
+			Console.WriteLine("Vertex " + v.ToString());
 			List<int> tris = new List<int>();
 			GetVtxTriangles(v, tris, false);
-			System.Console.WriteLine(string.Format("  Tris {0}  Edges {1}  refcount {2}", tris.Count, GetVtxEdgeCount(v), vertices_refcount.refCount(v) ));
+			Console.WriteLine(string.Format("  Tris {0}  Edges {1}  refcount {2}", tris.Count, GetVtxEdgeCount(v), vertices_refcount.refCount(v) ));
 			foreach ( int t in tris ) {
 				Index3i tv = GetTriangle(t), te = GetTriEdges(t);
-				System.Console.WriteLine(string.Format("  t{6} {0} {1} {2}   te {3} {4} {5}", tv[0],tv[1],tv[2], te[0],te[1],te[2],t));
+				Console.WriteLine(string.Format("  t{6} {0} {1} {2}   te {3} {4} {5}", tv[0],tv[1],tv[2], te[0],te[1],te[2],t));
 			}
 			foreach ( int e in VtxEdgesItr(v) ) {
 				Index2i ev = GetEdgeV(e), et = GetEdgeT(e);
-				System.Console.WriteLine(string.Format("  e{4} {0} {1} / {2} {3}", ev[0],ev[1], et[0],et[1], e));
+				Console.WriteLine(string.Format("  e{4} {0} {1} / {2} {3}", ev[0],ev[1], et[0],et[1], e));
 			}
 		}
 
@@ -47,7 +47,7 @@ namespace g4
 		public void debug_print_mesh() {
 			for ( int k = 0; k < vertices_refcount.max_index; ++k ) {
 				if ( vertices_refcount.isValid(k) == false )
-					System.Console.WriteLine(string.Format("v{0} : invalid",k));
+					Console.WriteLine(string.Format("v{0} : invalid",k));
 				else 
 					debug_print_vertex(k);
 			}
@@ -157,7 +157,7 @@ namespace g4
         /// </summary>
         public bool CheckValidity(bool bAllowNonManifoldVertices = false, FailMode eFailMode = FailMode.Throw ) {
 
-			int[] triToVtxRefs = new int[this.MaxVertexID];
+			int[] triToVtxRefs = new int[MaxVertexID];
 
             bool is_ok = true;
             Action<bool> CheckOrFailF = (b) => { is_ok = is_ok && b; };

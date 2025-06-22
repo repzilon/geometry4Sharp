@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -15,7 +14,7 @@ namespace g4
 		public int b;
 
         public Interval1i(int f) { a = b = f; }
-        public Interval1i(int x, int y) { this.a = x; this.b = y; }
+        public Interval1i(int x, int y) { a = x; b = y; }
         public Interval1i(int[] v2) { a = v2[0]; b = v2[1]; }
         public Interval1i(Interval1i copy) { a = copy.a; b = copy.b; }
 

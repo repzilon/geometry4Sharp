@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -11,13 +8,13 @@ namespace g4
         public Vector2d Direction;
 
         public Line2d(Vector2d origin, Vector2d direction) {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
         }
 
         public Line2d(ref Vector2d origin, ref Vector2d direction) {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
         }
 
         public static Line2d FromPoints(Vector2d p0, Vector2d p1) {
@@ -118,8 +115,8 @@ namespace g4
 
         public Line2f(Vector2f origin, Vector2f direction)
         {
-            this.Origin = origin;
-            this.Direction = direction;
+            Origin = origin;
+            Direction = direction;
         }
 
         // parameter is distance along Line

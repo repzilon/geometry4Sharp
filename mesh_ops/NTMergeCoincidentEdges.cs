@@ -2,7 +2,6 @@
 // Distributed under the Boost Software License, Version 1.0. http://www.boost.org/LICENSE_1_0.txt
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using g4;
 
 namespace gs
@@ -29,7 +28,7 @@ namespace gs
 			merge_r2 = MergeDistance * MergeDistance;
 
             // construct hash table for edge midpoints
-            var pointset = new NTMeshBoundaryEdgeMidpoints(this.Mesh);
+            var pointset = new NTMeshBoundaryEdgeMidpoints(Mesh);
 			var hash = new PointSetHashtable(pointset);
 
             AxisAlignedBox3d bounds = BoundsUtil.Bounds(pointset);

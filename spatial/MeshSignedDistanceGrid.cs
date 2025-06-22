@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 
@@ -231,7 +229,7 @@ namespace g4
             // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
             DenseGrid3i intersection_count = new DenseGrid3i(ni, nj, nk, 0); 
                                                                              
-            if (DebugPrint) System.Console.WriteLine("start");
+            if (DebugPrint) Console.WriteLine("start");
 
             // Compute narrow-band distances. For each triangle, we find its grid-coord-bbox,
             // and compute exact distances within that box. The intersection_count grid
@@ -277,13 +275,13 @@ namespace g4
 
             if (ComputeSigns == true) {
 
-                if (DebugPrint) System.Console.WriteLine("done narrow-band");
+                if (DebugPrint) Console.WriteLine("done narrow-band");
 
                 compute_intersections(origin, dx, ni, nj, nk, intersection_count);
                 if (CancelF())
                     return;
 
-                if (DebugPrint) System.Console.WriteLine("done intersections");
+                if (DebugPrint) Console.WriteLine("done intersections");
 
                 if (ComputeMode == ComputeModes.FullGrid) {
                     // and now we fill in the rest of the distances with fast sweeping
@@ -292,10 +290,10 @@ namespace g4
                         if (CancelF())
                             return;
                     }
-                        if (DebugPrint) System.Console.WriteLine("done sweeping");
+                        if (DebugPrint) Console.WriteLine("done sweeping");
                 } else {
                     // nothing!
-                    if (DebugPrint) System.Console.WriteLine("skipped sweeping");
+                    if (DebugPrint) Console.WriteLine("skipped sweeping");
                 }
 
 
@@ -304,7 +302,7 @@ namespace g4
                 if (CancelF())
                     return;
 
-                if (DebugPrint) System.Console.WriteLine("done signs");
+                if (DebugPrint) Console.WriteLine("done signs");
 
                 if (WantIntersectionsGrid)
                     intersections_grid = intersection_count;
@@ -333,7 +331,7 @@ namespace g4
             // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
             DenseGrid3i intersection_count = new DenseGrid3i(ni, nj, nk, 0);
 
-            if (DebugPrint) System.Console.WriteLine("start");
+            if (DebugPrint) Console.WriteLine("start");
 
             double ox = (double)origin[0], oy = (double)origin[1], oz = (double)origin[2];
             double invdx = 1.0 / dx;
@@ -397,7 +395,7 @@ namespace g4
                     }
                 }
             });
-            if (DebugPrint) System.Console.WriteLine("done narrow-band");
+            if (DebugPrint) Console.WriteLine("done narrow-band");
             if (CancelF())
                 return;
 
@@ -408,7 +406,7 @@ namespace g4
                 if (CancelF())
                     return;
 
-                if (DebugPrint) System.Console.WriteLine("done intersections");
+                if (DebugPrint) Console.WriteLine("done intersections");
 
                 if (ComputeMode == ComputeModes.FullGrid) {
                     // and now we fill in the rest of the distances with fast sweeping
@@ -417,13 +415,13 @@ namespace g4
                         if (CancelF())
                             return;
                     }
-                    if (DebugPrint) System.Console.WriteLine("done sweeping");
+                    if (DebugPrint) Console.WriteLine("done sweeping");
                 } else {
                     // nothing!
-                    if (DebugPrint) System.Console.WriteLine("skipped sweeping");
+                    if (DebugPrint) Console.WriteLine("skipped sweeping");
                 }
 
-                if (DebugPrint) System.Console.WriteLine("done sweeping");
+                if (DebugPrint) Console.WriteLine("done sweeping");
 
                 // then figure out signs (inside/outside) from intersection counts
                 compute_signs(ni, nj, nk, distances, intersection_count);
@@ -433,7 +431,7 @@ namespace g4
                 if (WantIntersectionsGrid)
                     intersections_grid = intersection_count;
 
-                if (DebugPrint) System.Console.WriteLine("done signs");
+                if (DebugPrint) Console.WriteLine("done signs");
             }
 
             if (WantClosestTriGrid)
@@ -459,7 +457,7 @@ namespace g4
             // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
             DenseGrid3i intersection_count = new DenseGrid3i(ni, nj, nk, 0);
 
-            if (DebugPrint) System.Console.WriteLine("start");
+            if (DebugPrint) Console.WriteLine("start");
 
             double ox = (double)origin[0], oy = (double)origin[1], oz = (double)origin[2];
             double invdx = 1.0 / dx;
@@ -508,7 +506,7 @@ namespace g4
             });
 
 
-            if (DebugPrint) System.Console.WriteLine("done narrow-band tagging");
+            if (DebugPrint) Console.WriteLine("done narrow-band tagging");
 
             double max_dist = exact_band * (dx * MathUtil.SqrtTwo);
             gParallel.ForEach(grid.Indices(), (idx) => {
@@ -530,7 +528,7 @@ namespace g4
             });
 
 
-            if (DebugPrint) System.Console.WriteLine("done distances");
+            if (DebugPrint) Console.WriteLine("done distances");
 
 
             if (CancelF())
@@ -538,13 +536,13 @@ namespace g4
 
             if (ComputeSigns == true) {
 
-                if (DebugPrint) System.Console.WriteLine("done narrow-band");
+                if (DebugPrint) Console.WriteLine("done narrow-band");
 
                 compute_intersections(origin, dx, ni, nj, nk, intersection_count);
                 if (CancelF())
                     return;
 
-                if (DebugPrint) System.Console.WriteLine("done intersections");
+                if (DebugPrint) Console.WriteLine("done intersections");
 
                 if (ComputeMode == ComputeModes.FullGrid) {
                     // and now we fill in the rest of the distances with fast sweeping
@@ -553,13 +551,13 @@ namespace g4
                         if (CancelF())
                             return;
                     }
-                    if (DebugPrint) System.Console.WriteLine("done sweeping");
+                    if (DebugPrint) Console.WriteLine("done sweeping");
                 } else {
                     // nothing!
-                    if (DebugPrint) System.Console.WriteLine("skipped sweeping");
+                    if (DebugPrint) Console.WriteLine("skipped sweeping");
                 }
 
-                if (DebugPrint) System.Console.WriteLine("done sweeping");
+                if (DebugPrint) Console.WriteLine("done sweeping");
 
                 // then figure out signs (inside/outside) from intersection counts
                 compute_signs(ni, nj, nk, distances, intersection_count);
@@ -569,7 +567,7 @@ namespace g4
                 if (WantIntersectionsGrid)
                     intersections_grid = intersection_count;
 
-                if (DebugPrint) System.Console.WriteLine("done signs");
+                if (DebugPrint) Console.WriteLine("done signs");
             }
 
             if (WantClosestTriGrid)
@@ -604,7 +602,7 @@ namespace g4
             // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
             DenseGrid3i intersection_count = new DenseGrid3i(ni, nj, nk, 0);
 
-            if (DebugPrint) System.Console.WriteLine("start");
+            if (DebugPrint) Console.WriteLine("start");
 
             double ox = (double)origin[0], oy = (double)origin[1], oz = (double)origin[2];
             double invdx = 1.0 / dx;
@@ -647,7 +645,7 @@ namespace g4
                 done[idx_linear] = true;
                 grid_lock.Exit();
             });
-            if (DebugPrint) System.Console.WriteLine("done vertices");
+            if (DebugPrint) Console.WriteLine("done vertices");
             if (CancelF())
                 return;
 
@@ -699,20 +697,20 @@ namespace g4
                 var tmp = Q; Q = next_Q; next_Q = tmp;
                 next_pass_count = Q.Count;
             }
-            if (DebugPrint) System.Console.WriteLine("done floodfill");
+            if (DebugPrint) Console.WriteLine("done floodfill");
             if (CancelF())
                 return;
 
 
             if (ComputeSigns == true) {
 
-                if (DebugPrint) System.Console.WriteLine("done narrow-band");
+                if (DebugPrint) Console.WriteLine("done narrow-band");
 
                 compute_intersections(origin, dx, ni, nj, nk, intersection_count);
                 if (CancelF())
                     return;
 
-                if (DebugPrint) System.Console.WriteLine("done intersections");
+                if (DebugPrint) Console.WriteLine("done intersections");
 
                 if (ComputeMode == ComputeModes.FullGrid) {
                     // and now we fill in the rest of the distances with fast sweeping
@@ -721,13 +719,13 @@ namespace g4
                         if (CancelF())
                             return;
                     }
-                    if (DebugPrint) System.Console.WriteLine("done sweeping");
+                    if (DebugPrint) Console.WriteLine("done sweeping");
                 } else {
                     // nothing!
-                    if (DebugPrint) System.Console.WriteLine("skipped sweeping");
+                    if (DebugPrint) Console.WriteLine("skipped sweeping");
                 }
 
-                if (DebugPrint) System.Console.WriteLine("done sweeping");
+                if (DebugPrint) Console.WriteLine("done sweeping");
 
                 // then figure out signs (inside/outside) from intersection counts
                 compute_signs(ni, nj, nk, distances, intersection_count);
@@ -737,7 +735,7 @@ namespace g4
                 if (WantIntersectionsGrid)
                     intersections_grid = intersection_count;
 
-                if (DebugPrint) System.Console.WriteLine("done signs");
+                if (DebugPrint) Console.WriteLine("done signs");
             }
 
             if (WantClosestTriGrid)

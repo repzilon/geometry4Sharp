@@ -118,9 +118,9 @@ namespace g4
 
         public IParametricCurve2d Clone() {
             ParametricCurveSequence2 s2 = new ParametricCurveSequence2();
-            s2.closed = this.closed;
+            s2.closed = closed;
             s2.curves = new List<IParametricCurve2d>();
-            foreach (var c in this.curves)
+            foreach (var c in curves)
                 s2.curves.Add(c.Clone());
             return s2;
         }
@@ -129,7 +129,7 @@ namespace g4
         public bool IsTransformable { get { return true; } }
         public void Transform(ITransform2 xform)
         {
-            foreach (var c in this.curves)
+            foreach (var c in curves)
                 c.Transform(xform);
         }
 

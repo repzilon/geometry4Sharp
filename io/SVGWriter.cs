@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
-using System.Globalization;
 
 namespace g4
 {
@@ -229,9 +229,9 @@ namespace g4
         public static void QuickWrite(List<GeneralPolygon2d> polygons, string sPath, double line_width = 1)
         {
             SVGWriter writer = new SVGWriter();
-            Style outer_cw = SVGWriter.Style.Outline("black", 2*(float)line_width);
-            Style outer_ccw = SVGWriter.Style.Outline("green", 2 * (float)line_width);
-            Style inner = SVGWriter.Style.Outline("red", (float)line_width);
+            Style outer_cw = Style.Outline("black", 2*(float)line_width);
+            Style outer_ccw = Style.Outline("green", 2 * (float)line_width);
+            Style inner = Style.Outline("red", (float)line_width);
             foreach (GeneralPolygon2d poly in polygons) {
                 if ( poly.Outer.IsClockwise )
                     writer.AddPolygon(poly.Outer, outer_cw);
@@ -247,7 +247,7 @@ namespace g4
         public static void QuickWrite(DGraph2 graph, string sPath, double line_width = 1)
         {
             SVGWriter writer = new SVGWriter();
-            Style style = SVGWriter.Style.Outline("black", (float)line_width);
+            Style style = Style.Outline("black", (float)line_width);
             writer.AddGraph(graph, style);
             writer.Write(sPath);
         }
@@ -257,15 +257,15 @@ namespace g4
 		                              string sPath)
 		{
 			SVGWriter writer = new SVGWriter();
-			Style style1 = SVGWriter.Style.Outline(color1, width1);
-			Style style1_holes = SVGWriter.Style.Outline(color1, width1/2);
+			Style style1 = Style.Outline(color1, width1);
+			Style style1_holes = Style.Outline(color1, width1/2);
 			foreach (GeneralPolygon2d poly in polygons1) {
 				writer.AddPolygon(poly.Outer, style1);
 				foreach (var hole in poly.Holes)
 					writer.AddPolygon(hole, style1_holes);
 			}
-			Style style2 = SVGWriter.Style.Outline(color2, width2);
-			Style style2_holes = SVGWriter.Style.Outline(color2, width2 / 2);
+			Style style2 = Style.Outline(color2, width2);
+			Style style2_holes = Style.Outline(color2, width2 / 2);
 			foreach (GeneralPolygon2d poly in polygons2) {
 				writer.AddPolygon(poly.Outer, style2);
 				foreach (var hole in poly.Holes)

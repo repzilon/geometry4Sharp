@@ -1,6 +1,4 @@
-﻿using System;
-
-#if G3_USING_UNITY
+﻿#if G3_USING_UNITY
 using UnityEngine;
 #endif
 

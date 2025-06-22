@@ -1772,7 +1772,7 @@ namespace g4
         /// </summary>
         public bool CheckValidity(FailMode eFailMode = FailMode.Throw)
         {
-            int[] triToVtxRefs = new int[this.MaxVertexID];
+            int[] triToVtxRefs = new int[MaxVertexID];
 
             bool is_ok = true;
             Action<bool> CheckOrFailF = (b) => { is_ok = is_ok && b; };
@@ -2179,9 +2179,9 @@ namespace g4
             merge_info.eRemoved = ecd;
 
             // if a/c or b/d are connected by an existing edge, we can't merge
-            if (a != c && find_edge(a, c) != NTMesh3.InvalidID)
+            if (a != c && find_edge(a, c) != InvalidID)
                 return MeshResult.Failed_InvalidNeighbourhood;
-            if (b != d && find_edge(b, d) != NTMesh3.InvalidID)
+            if (b != d && find_edge(b, d) != InvalidID)
                 return MeshResult.Failed_InvalidNeighbourhood;
 
             // if vertices at either end already share a common neighbour vertex, and we 
@@ -2194,7 +2194,7 @@ namespace g4
                 int ea = 0, ec = 0, other_v = (b == d) ? b : -1;
                 foreach (int cnbr in VtxVerticesItr(c))
                 {
-                    if (cnbr != other_v && (ea = find_edge(a, cnbr)) != NTMesh3.InvalidID)
+                    if (cnbr != other_v && (ea = find_edge(a, cnbr)) != InvalidID)
                     {
                         ec = find_edge(c, cnbr);
                         if (IsBoundaryEdge(ea) == false || IsBoundaryEdge(ec) == false)
@@ -2207,7 +2207,7 @@ namespace g4
                 int eb = 0, ed = 0, other_v = (a == c) ? a : -1;
                 foreach (int dnbr in VtxVerticesItr(d))
                 {
-                    if (dnbr != other_v && (eb = find_edge(b, dnbr)) != NTMesh3.InvalidID)
+                    if (dnbr != other_v && (eb = find_edge(b, dnbr)) != InvalidID)
                     {
                         ed = find_edge(d, dnbr);
                         if (IsBoundaryEdge(eb) == false || IsBoundaryEdge(ed) == false)

@@ -425,13 +425,13 @@ namespace g4
 
         public IParametricCurve2d Clone() {
             NURBSCurve2 c2 = new NURBSCurve2();
-            c2.mNumCtrlPoints = this.mNumCtrlPoints;
-            c2.mCtrlPoint = (Vector2d[])this.mCtrlPoint.Clone();
-            c2.mCtrlWeight = (double[])this.mCtrlWeight.Clone();
-            c2.mLoop = this.mLoop;
-            c2.mBasis = this.mBasis.Clone();
-            c2.mReplicate = this.mReplicate;
-            c2.is_closed = this.is_closed;
+            c2.mNumCtrlPoints = mNumCtrlPoints;
+            c2.mCtrlPoint = (Vector2d[])mCtrlPoint.Clone();
+            c2.mCtrlWeight = (double[])mCtrlWeight.Clone();
+            c2.mLoop = mLoop;
+            c2.mBasis = mBasis.Clone();
+            c2.mReplicate = mReplicate;
+            c2.is_closed = is_closed;
             return c2;
         }
 

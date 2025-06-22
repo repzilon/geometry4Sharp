@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace g4
+﻿namespace g4
 {
     // These are convenience classes used in place of local stack arrays
     // (which C# does not support, but is common in C++ code)

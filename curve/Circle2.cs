@@ -41,8 +41,8 @@ namespace g4
 		}
 
         public IParametricCurve2d Clone() {
-            return new Circle2d(this.Center, this.Radius) 
-                { IsReversed = this.IsReversed };
+            return new Circle2d(Center, Radius) 
+                { IsReversed = IsReversed };
         }
 
         public bool IsTransformable { get { return true; } }

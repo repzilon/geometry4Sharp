@@ -85,9 +85,9 @@ namespace g4
         {
             GeneralPolygon2d poly = new GeneralPolygon2d();
             poly.Outer = new Polygon2d(
-                CurveSampler2.AutoSample(this.outer, fSpacingLength, fSpacingT));
+                CurveSampler2.AutoSample(outer, fSpacingLength, fSpacingT));
             poly.Outer.Simplify(0, fDeviationTolerance);
-            foreach (var hole in this.Holes) {
+            foreach (var hole in Holes) {
                 Polygon2d holePoly = new Polygon2d(
                     CurveSampler2.AutoSample(hole, fSpacingLength, fSpacingT));
                 holePoly.Simplify(0, fDeviationTolerance);

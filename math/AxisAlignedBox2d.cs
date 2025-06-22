@@ -117,7 +117,7 @@ namespace g4
             Max.x -= fRadius; Max.y -= fRadius;
         }
         // values are all added
-        [System.Obsolete("This method name is confusing. Will remove in future. Use Add() instead")]
+        [Obsolete("This method name is confusing. Will remove in future. Use Add() instead")]
         public void Pad(double fPadLeft, double fPadRight, double fPadBottom, double fPadTop) {
             Min.x += fPadLeft; Min.y += fPadBottom;
             Max.x += fPadRight; Max.y += fPadTop;
@@ -226,7 +226,7 @@ namespace g4
                 Math.Max(Min.x, box.Min.x), Math.Max(Min.y, box.Min.y),
                 Math.Min(Max.x, box.Max.x), Math.Min(Max.y, box.Max.y));
             if (intersect.Height <= 0 || intersect.Width <= 0)
-                return AxisAlignedBox2d.Empty;
+                return Empty;
             else
                 return intersect;
         }

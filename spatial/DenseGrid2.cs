@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 
 namespace g4
@@ -37,8 +35,8 @@ namespace g4
         {
             Util.gDevAssert(ni == g2.ni && nj == g2.nj);
             var tmp = g2.Buffer;
-            g2.Buffer = this.Buffer;
-            this.Buffer = tmp;
+            g2.Buffer = Buffer;
+            Buffer = tmp;
         }
 
         public int size { get { return ni * nj; } }
@@ -80,7 +78,7 @@ namespace g4
 
         public void copy(DenseGrid2f copy)
         {
-            Array.Copy(copy.Buffer, this.Buffer, this.Buffer.Length);
+            Array.Copy(copy.Buffer, Buffer, Buffer.Length);
         }
 
         public float this[int i] {
@@ -179,7 +177,7 @@ namespace g4
         public DenseGrid2i(DenseGrid2i copy)
         {
             resize(copy.ni, copy.nj);
-            Array.Copy(copy.Buffer, this.Buffer, this.Buffer.Length);
+            Array.Copy(copy.Buffer, Buffer, Buffer.Length);
         }
 
         public int size { get { return ni * nj; } }
@@ -197,7 +195,7 @@ namespace g4
 
         public void copy(DenseGrid2i copy)
         {
-            Array.Copy(copy.Buffer, this.Buffer, this.Buffer.Length);
+            Array.Copy(copy.Buffer, Buffer, Buffer.Length);
         }
 
         public void assign(int value)

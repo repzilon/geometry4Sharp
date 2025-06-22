@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace g4 
+﻿namespace g4 
 {
 	// ported from WildMagic5 
 	public class IntrSegment2Triangle2

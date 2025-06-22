@@ -28,7 +28,7 @@ namespace g4
 
 
 		public Hexagon2d Clone() {
-			return new Hexagon2d(this.Center, this.Radius, this.TopMode);
+			return new Hexagon2d(Center, Radius, TopMode);
         }
 
 

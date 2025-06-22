@@ -1,7 +1,4 @@
-﻿using System;
-
-
-namespace g4
+﻿namespace g4
 {
     public interface IMatrix
     {

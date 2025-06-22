@@ -163,12 +163,12 @@ namespace g4
         {
             int[] mapV = new int[graph.MaxVertexID];
             foreach ( int vid in graph.VertexIndices()) {
-                mapV[vid] = this.AppendVertex(graph.GetVertex(vid));
+                mapV[vid] = AppendVertex(graph.GetVertex(vid));
             }
             foreach ( int eid in graph.EdgeIndices()) {
                 Index2i ev = graph.GetEdgeV(eid);
                 int use_gid = (gid == -1) ? graph.GetEdgeGroup(eid) : gid;
-                this.AppendEdge(mapV[ev.a], mapV[ev.b], use_gid);
+                AppendEdge(mapV[ev.a], mapV[ev.b], use_gid);
             }
         }
 

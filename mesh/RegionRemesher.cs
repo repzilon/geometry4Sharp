@@ -28,7 +28,7 @@ namespace g4
             BaseMesh = mesh;
             Region = new DSubmesh3(mesh, regionTris);
             Region.ComputeBoundaryInfo(regionTris);
-            base.mesh = Region.SubMesh;
+            this.mesh = Region.SubMesh;
 
             cur_base_tris = (int[])regionTris.Clone();
 
@@ -44,7 +44,7 @@ namespace g4
             Region = new DSubmesh3(mesh, regionTris);
             int count = regionTris.Count();
             Region.ComputeBoundaryInfo(regionTris, count);
-            base.mesh = Region.SubMesh;
+            this.mesh = Region.SubMesh;
 
             cur_base_tris = regionTris.ToArray();
 

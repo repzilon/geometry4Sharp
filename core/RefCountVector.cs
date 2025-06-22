@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-
-namespace g4
+﻿namespace g4
 {
 
     /// <summary>

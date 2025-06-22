@@ -98,7 +98,7 @@ namespace g4
                     double invLength = 1.0 / length;
                     return new Vector3d(x * invLength, y * invLength, z * invLength);
                 } else
-                    return Vector3d.Zero;
+                    return Zero;
             }
         }
 
@@ -454,8 +454,8 @@ namespace g4
             }
 
             if (numInputs == 2) {
-                v2 = Vector3d.Cross(v0, v1);
-                return Vector3d.Orthonormalize(ref v0, ref v1, ref v2);
+                v2 = Cross(v0, v1);
+                return Orthonormalize(ref v0, ref v1, ref v2);
                 //return Orthonormalize<3, Real>(3, v, robust);
             }
 

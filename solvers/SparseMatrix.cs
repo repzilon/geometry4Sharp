@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
-using System.Threading;
 
 namespace g4
 {
@@ -238,7 +235,7 @@ namespace g4
             for ( int r1i = 0; r1i < N; r1i++ ) {
 
                 row.Clear();
-                this.get_row_nonzeros(r1i, row);
+                get_row_nonzeros(r1i, row);
                 int rN = row.Count;
 
                 for ( int c2i = r1i; c2i < N; c2i++ ) {

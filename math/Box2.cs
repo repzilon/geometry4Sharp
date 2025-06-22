@@ -148,7 +148,7 @@ namespace g4 {
         public double DistanceSquared(Vector2d v)
         {
             // Work in the box's coordinate system.
-            v -= this.Center;
+            v -= Center;
 
             // Compute squared distance and closest point on box.
             double sqrDistance = 0;
@@ -177,7 +177,7 @@ namespace g4 {
         public Vector2d ClosestPoint(Vector2d v)
         {
             // Work in the box's coordinate system.
-            Vector2d diff = v - this.Center;
+            Vector2d diff = v - Center;
 
             // Compute squared distance and closest point on box.
             double sqrDistance = 0;

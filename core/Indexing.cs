@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
 
 
 namespace g4
@@ -19,7 +18,7 @@ namespace g4
                 yield return Start + i;
         }
         IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 
@@ -150,7 +149,7 @@ namespace g4
             }
         }
         IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
 

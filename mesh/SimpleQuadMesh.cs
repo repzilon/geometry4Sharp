@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace g4
@@ -289,39 +288,39 @@ namespace g4
          */
         public double[] GetVertexArray()
         {
-            return this.Vertices.GetBuffer();
+            return Vertices.GetBuffer();
         }
         public float[] GetVertexArrayFloat()
         {
-            float[] buf = new float[this.Vertices.Length];
-            for (int i = 0; i < this.Vertices.Length; ++i)
-                buf[i] = (float)this.Vertices[i];
+            float[] buf = new float[Vertices.Length];
+            for (int i = 0; i < Vertices.Length; ++i)
+                buf[i] = (float)Vertices[i];
             return buf;
         }
 
         public float[] GetVertexNormalArray()
         {
-            return (this.HasVertexNormals) ? this.Normals.GetBuffer() : null;
+            return (HasVertexNormals) ? Normals.GetBuffer() : null;
         }
 
         public float[] GetVertexColorArray()
         {
-            return (this.HasVertexColors) ? this.Colors.GetBuffer() : null;
+            return (HasVertexColors) ? Colors.GetBuffer() : null;
         }
 
         public float[] GetVertexUVArray()
         {
-            return (this.HasVertexUVs) ? this.UVs.GetBuffer() : null;
+            return (HasVertexUVs) ? UVs.GetBuffer() : null;
         }
 
         public int[] GetQuadArray()
         {
-            return this.Quads.GetBuffer();
+            return Quads.GetBuffer();
         }
 
         public int[] GetFaceGroupsArray()
         {
-            return (this.HasFaceGroups) ? this.FaceGroups.GetBuffer() : null;
+            return (HasFaceGroups) ? FaceGroups.GetBuffer() : null;
         }
 
 

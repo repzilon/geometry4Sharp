@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace g4
 {
@@ -34,7 +31,7 @@ namespace g4
 
 		public DistLine2Line2( Line2d Line1, Line2d Line2)
 		{
-			this.line2 = Line2; this.line1 = Line1;
+			line2 = Line2; line1 = Line1;
 		}
 
 		static public double MinDistance(Line2d line1, Line2d line2)

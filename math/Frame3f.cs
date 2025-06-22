@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
-using g4;
 
 namespace g4
 {
@@ -15,8 +11,8 @@ namespace g4
 
         public Frame3f(Frame3f copy)
         {
-            this.rotation = copy.rotation;
-            this.origin = copy.origin;
+            rotation = copy.rotation;
+            origin = copy.origin;
         }
 
         public Frame3f(Vector3f origin)
@@ -64,7 +60,7 @@ namespace g4
         {
             this.origin = origin;
             Matrix3f m = new Matrix3f(x, y, z, false);
-            this.rotation = m.ToQuaternion();
+            rotation = m.ToQuaternion();
         }
 
 
@@ -112,11 +108,11 @@ namespace g4
         }
         public Frame3f Translated(Vector3f v)
         {
-            return new Frame3f(this.origin + v, this.rotation);
+            return new Frame3f(origin + v, rotation);
         }
         public Frame3f Translated(float fDistance, int nAxis)
         {
-            return new Frame3f(this.origin + fDistance * this.GetAxis(nAxis), this.rotation);
+            return new Frame3f(origin + fDistance * GetAxis(nAxis), rotation);
         }
 
         public void Scale(float f)
@@ -129,11 +125,11 @@ namespace g4
         }
         public Frame3f Scaled(float f)
         {
-            return new Frame3f(f * this.origin, this.rotation);
+            return new Frame3f(f * origin, rotation);
         }
         public Frame3f Scaled(Vector3f scale)
         {
-            return new Frame3f(scale * this.origin, this.rotation);
+            return new Frame3f(scale * origin, rotation);
         }
 
         public void Rotate(Quaternionf q)
@@ -142,11 +138,11 @@ namespace g4
         }
         public Frame3f Rotated(Quaternionf q)
         {
-            return new Frame3f(this.origin, q * this.rotation);
+            return new Frame3f(origin, q * rotation);
         }
         public Frame3f Rotated(float fAngle, int nAxis)
         {
-            return this.Rotated(new Quaternionf(GetAxis(nAxis), fAngle));
+            return Rotated(new Quaternionf(GetAxis(nAxis), fAngle));
         }
 
         /// <summary>
@@ -167,8 +163,8 @@ namespace g4
         }
         public Frame3f RotatedAround(Vector3f point, Quaternionf q)
         {
-            Vector3f dv = q * (this.origin - point);
-            return new Frame3f(point + dv, q * this.rotation);
+            Vector3f dv = q * (origin - point);
+            return new Frame3f(point + dv, q * rotation);
         }
 
         public void AlignAxis(int nAxis, Vector3f vTo)
@@ -206,9 +202,9 @@ namespace g4
             } else if ( nPlaneNormalAxis == 1 ) {
                 dv[1] = 0; dv[2] = v[1];
             }
-            return this.rotation * dv + this.origin;
+            return rotation * dv + origin;
         }
-        [System.Obsolete("replaced with FromPlaneUV")]
+        [Obsolete("replaced with FromPlaneUV")]
         public Vector3f FromFrameP(Vector2f v, int nPlaneNormalAxis) {
             return FromPlaneUV(v, nPlaneNormalAxis);
         }
@@ -230,7 +226,7 @@ namespace g4
             float fv = d.Dot(GetAxis(nAxis1));
             return new Vector2f(fu, fv);
         }
-        [System.Obsolete("Use explicit ToPlaneUV instead")]
+        [Obsolete("Use explicit ToPlaneUV instead")]
         public Vector2f ToPlaneUV(Vector3f p, int nNormal, int nAxis0 = -1, int nAxis1 = -1)
         {
             if (nAxis0 != -1 || nAxis1 != -1)
@@ -273,19 +269,19 @@ namespace g4
         }
         /// <summary> Map point *from* local frame coordinates into "world" coordinates </summary>
         public Vector3f FromFrameP(Vector3f v) {
-            return this.rotation * v + this.origin;
+            return rotation * v + origin;
         }
         /// <summary> Map point *from* local frame coordinates into "world" coordinates </summary>
         public Vector3f FromFrameP(ref Vector3f v) {
-            return this.rotation * v + this.origin;
+            return rotation * v + origin;
         }
         /// <summary> Map point *from* local frame coordinates into "world" coordinates </summary>
         public Vector3d FromFrameP(Vector3d v) {
-            return this.rotation * v + this.origin;
+            return rotation * v + origin;
         }
         /// <summary> Map point *from* local frame coordinates into "world" coordinates </summary>
         public Vector3d FromFrameP(ref Vector3d v) {
-            return this.rotation * v + this.origin;
+            return rotation * v + origin;
         }
 
 
@@ -307,38 +303,38 @@ namespace g4
         }
         /// <summary> Map vector *from* local frame coordinates into "world" coordinates </summary>
         public Vector3f FromFrameV(Vector3f v) {
-            return this.rotation * v;
+            return rotation * v;
         }
         /// <summary> Map vector *from* local frame coordinates into "world" coordinates </summary>
         public Vector3f FromFrameV(ref Vector3f v) {
-            return this.rotation * v;
+            return rotation * v;
         }
         /// <summary> Map vector *from* local frame coordinates into "world" coordinates </summary>
         public Vector3d FromFrameV(ref Vector3d v) {
-            return this.rotation * v;
+            return rotation * v;
         }
         /// <summary> Map vector *from* local frame coordinates into "world" coordinates </summary>
         public Vector3d FromFrameV(Vector3d v) {
-            return this.rotation * v;
+            return rotation * v;
         }
 
 
 
         ///<summary> Map quaternion *into* local coordinates of Frame </summary>
         public Quaternionf ToFrame(Quaternionf q) {
-            return Quaternionf.Inverse(this.rotation) * q;
+            return Quaternionf.Inverse(rotation) * q;
         }
         ///<summary> Map quaternion *into* local coordinates of Frame </summary>
         public Quaternionf ToFrame(ref Quaternionf q) {
-            return Quaternionf.Inverse(this.rotation) * q;
+            return Quaternionf.Inverse(rotation) * q;
         }
         /// <summary> Map quaternion *from* local frame coordinates into "world" coordinates </summary>
         public Quaternionf FromFrame(Quaternionf q) {
-            return this.rotation * q;
+            return rotation * q;
         }
         /// <summary> Map quaternion *from* local frame coordinates into "world" coordinates </summary>
         public Quaternionf FromFrame(ref Quaternionf q) {
-            return this.rotation * q;
+            return rotation * q;
         }
 
 

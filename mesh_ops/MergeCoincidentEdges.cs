@@ -28,7 +28,7 @@ namespace gs
 			merge_r2 = MergeDistance * MergeDistance;
 
             // construct hash table for edge midpoints
-            MeshBoundaryEdgeMidpoints pointset = new MeshBoundaryEdgeMidpoints(this.Mesh);
+            MeshBoundaryEdgeMidpoints pointset = new MeshBoundaryEdgeMidpoints(Mesh);
 			PointSetHashtable hash = new PointSetHashtable(pointset);
             int hashN = 64;
             if (Mesh.TriangleCount > 100000)   hashN = 128;

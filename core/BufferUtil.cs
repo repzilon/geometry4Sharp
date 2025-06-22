@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
+using System.Linq;
 
 namespace g4
 {
@@ -569,7 +568,7 @@ namespace g4
         public ArrayAlias(T[] source, int i)
         {
             Source = source;
-            this.Index = i;
+            Index = i;
         }
 
         public T this[int i]

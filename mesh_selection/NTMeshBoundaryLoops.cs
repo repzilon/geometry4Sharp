@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 
 namespace g4
 {
@@ -54,7 +54,7 @@ namespace g4
 
         public NTMeshBoundaryLoops(NTMesh3 mesh, bool bAutoCompute = true)
         {
-            this.Mesh = mesh;
+            Mesh = mesh;
 			if (bAutoCompute)
            		Compute();
         }

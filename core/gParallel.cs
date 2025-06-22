@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 #if !(NET_2_0 || NET_2_0_SUBSET)
@@ -34,7 +32,7 @@ namespace g4
         public static void Evaluate(params Action[] funcs)
         {
             int N = funcs.Length;
-            gParallel.ForEach(Interval1i.Range(N), (i) => {
+            ForEach(Interval1i.Range(N), (i) => {
                 funcs[i]();
             });
         }

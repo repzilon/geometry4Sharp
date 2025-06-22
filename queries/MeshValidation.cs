@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-
-namespace g4
+﻿namespace g4
 {
     public enum ValidationStatus
     {
