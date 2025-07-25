@@ -17,7 +17,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0;net5.0;net48;net46</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <RootNamespace>g4</RootNamespace>
     <AssemblyName>geometry4Sharp_mesh</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
