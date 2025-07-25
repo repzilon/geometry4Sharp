@@ -19,7 +19,7 @@
     <OutputType>Library</OutputType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <RootNamespace>g4</RootNamespace>
-    <AssemblyName>geometry4Sharp</AssemblyName>
+    <AssemblyName>geometry4Sharp_mesh</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Product>geometry4Sharp</Product>
     <PackageId>geometry4Sharp</PackageId>
@@ -228,13 +228,7 @@
     <None Include="LICENSE" Pack="true" PackagePath="LICENSE.txt" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="FluentAssertions" Version="[5.10.3]" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' != 'net46'">
-    <PackageReference Include="FluentAssertions" Version="7.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="[4.5.0]" />
   </ItemGroup>
 </Project>
