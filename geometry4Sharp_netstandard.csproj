@@ -11,6 +11,7 @@
     <PackageTags>geometry3;graphics;math;approximation;solvers;color;convexhull;meshes;spatial;curves;solids;3d;unity</PackageTags>
     <RepositoryUrl>https://github.com/repzilon/geometry4Sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
