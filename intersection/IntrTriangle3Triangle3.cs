@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+#if !NET40
 using System.Runtime.CompilerServices;
+#endif
 
 namespace g4
 {
@@ -28,7 +30,9 @@ namespace g4
         private const double PRECISION = 0.00001;
         private const double PRECISION_SQR = PRECISION * PRECISION;
 
+#if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static bool NotEqual(double value1, double value2)
         {
             return Math.Abs(value1 - value2) > PRECISION;
@@ -41,7 +45,9 @@ namespace g4
         /// <param name="b">Second value</param>
         /// <param name="tolerance">Tolerance to use to compare</param>
         /// <returns>True if the difference between both values are not greater than the tolerance</returns>
+#if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static bool AlmostEqualTo(double a, double b, double tolerance = 0.0001)
         {
             return Math.Abs(a - b) <= Math.Abs(tolerance);
@@ -286,7 +292,7 @@ namespace g4
             double N0dT0V0 = N0.Dot(ref triangle0.V0);
             double min1, max1;
             ProjectOntoAxis(ref triangle1, ref N0, out min1, out max1);
-            if ((N0dT0V0 < min1 || N0dT0V0 > max1) && 
+            if ((N0dT0V0 < min1 || N0dT0V0 > max1) &&
                 NotEqual(N0dT0V0, min1) &&
                 NotEqual(N0dT0V0, max1))
             {

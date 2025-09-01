@@ -7,7 +7,7 @@ using System.Linq;
 namespace g4
 {
     /// <summary>
-    /// Convenience functions for working with arrays. 
+    /// Convenience functions for working with arrays.
     ///    - Math functions on arrays of floats/doubles
     ///    - "automatic" conversion from IEnumerable<T> (via introspection)
     ///    - byte[] conversions
@@ -507,12 +507,12 @@ namespace g4
 
 
         /// <summary>
-        /// Compress a byte buffer using Deflate/ZLib compression. 
+        /// Compress a byte buffer using Deflate/ZLib compression.
         /// </summary>
         static public byte[] CompressZLib(byte[] buffer, bool bFast)
         {
             MemoryStream ms = new MemoryStream();
-#if G3_USING_UNITY && (NET_2_0 || NET_2_0_SUBSET)
+#if NET40 || (G3_USING_UNITY && (NET_2_0 || NET_2_0_SUBSET))
             DeflateStream zip = new DeflateStream(ms, CompressionMode.Compress);
 #else
             DeflateStream zip = new DeflateStream(ms, (bFast) ? CompressionLevel.Fastest : CompressionLevel.Optimal, true);

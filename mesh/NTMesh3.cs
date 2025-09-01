@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+#if NET40
+using Int32Pair = System.Collections.Generic.KeyValuePair<int, int>;
+#else
+using Int32Pair = System.ValueTuple<int,int>;
+#endif
 
 namespace g4
 {
 
     //
-    // NTMesh3 is a variant of DMesh3 that supports non-manifold mesh topology. 
-    // See DMesh3 comments for most details. 
+    // NTMesh3 is a variant of DMesh3 that supports non-manifold mesh topology.
+    // See DMesh3 comments for most details.
     // Main change is that edges buffer only stores 2-tuple vertex pairs.
     // Each edge can be connected to arbitrary number of triangle, which are
     // stored in edge_triangles
@@ -16,7 +21,7 @@ namespace g4
     // per-vertex UVs have been removed (perhaps temporarily)
     //
     // Currently poke-face and split-edge are supported, but not collapse or flip.
-    // 
+    //
     public partial class NTMesh3 : IDeformableMesh
     {
         public const int InvalidID = -1;
@@ -52,7 +57,7 @@ namespace g4
         {
             allocate(bWantNormals, bWantColors, bWantTriGroups);
         }
-        public NTMesh3(MeshComponents flags) : 
+        public NTMesh3(MeshComponents flags) :
             this( (flags & MeshComponents.VertexNormals) != 0,  (flags & MeshComponents.VertexColors) != 0,
                   (flags & MeshComponents.FaceGroups) != 0 )
         {
@@ -240,7 +245,7 @@ namespace g4
 		}
 
         public Vector3f GetVertexColor(int vID) {
-            if (colors == null) { 
+            if (colors == null) {
                 return Vector3f.One;
             } else {
                 debug_check_is_vertex(vID);
@@ -305,7 +310,7 @@ namespace g4
 			vi.bHaveUV = false;
 			return vi;
 		}
-        
+
 
 
 
@@ -356,8 +361,8 @@ namespace g4
         }
 
 
-        public int GetTriangleGroup(int tID) { 
-			return (triangle_groups == null) ? -1 
+        public int GetTriangleGroup(int tID) {
+			return (triangle_groups == null) ? -1
                 : ( triangles_refcount.isValid(tID) ? triangle_groups[tID] : 0 );
 		}
 
@@ -514,7 +519,7 @@ namespace g4
             Util.gDevAssert(false);
             return InvalidEdge;
         }
-		
+
 
         // mesh-building
 
@@ -560,7 +565,7 @@ namespace g4
             updateTimeStamp(true);
             return vid;
         }
-        
+
 
         public int AppendTriangle(int v0, int v1, int v2, int gid = -1) {
             return AppendTriangle(new Index3i(v0, v1, v2), gid);
@@ -575,7 +580,7 @@ namespace g4
                 return InvalidID;
             }
 
-            // look up edges. 
+            // look up edges.
             int e0 = find_edge(tv[0], tv[1]);
             int e1 = find_edge(tv[1], tv[2]);
             int e2 = find_edge(tv[2], tv[0]);
@@ -909,7 +914,7 @@ namespace g4
 
         protected bool tri_has_v(int tID, int vID) {
 			int i = 3*tID;
-            return triangles[i] == vID 
+            return triangles[i] == vID
                 || triangles[i + 1] == vID
                 || triangles[i + 2] == vID;
         }
@@ -947,7 +952,7 @@ namespace g4
 			int tv2 = triangles[i+2];
 			if ( IndexUtil.same_pair_unordered(tv1, tv2, vA, vB) ) return triangle_edges[3*tID+1];
 			if ( IndexUtil.same_pair_unordered(tv2, tv0, vA, vB) ) return triangle_edges[3*tID+2];
-			return InvalidID;	
+			return InvalidID;
 		}
 
         // returns 0/1/2
@@ -959,7 +964,7 @@ namespace g4
 			int tv2 = triangles[i+2];
 			if ( IndexUtil.same_pair_unordered(tv1, tv2, vA, vB) ) return 1;
 			if ( IndexUtil.same_pair_unordered(tv2, tv0, vA, vB) ) return 2;
-			return InvalidID;	
+			return InvalidID;
 		}
 
 
@@ -1122,7 +1127,11 @@ namespace g4
                 // walk forward to next edge. if we hit start edge or boundary edge,
                 // we are done the walk. count number of edges as we go.
                 int count = 1;
+#if NET40
+	            var stack = new List<Int32Pair>();
+#else
                 var stack = new List<(int next_eid, int next_tid)>();
+#endif
                 var visited = new HashSet<int>() { };
                 while (true)
                 {
@@ -1132,19 +1141,24 @@ namespace g4
                     Index3i te = new Index3i(triangle_edges[i], triangle_edges[i + 1], triangle_edges[i + 2]);
                     int vert_idx = IndexUtil.find_tri_index(vID, ref tv);
                     int e1 = te[vert_idx], e2 = te[(vert_idx + 2) % 3];
-                    
+
                     int next_eid = (e1 == prev_eid) ? e2 : e1;
                     var next_eid_tris = EdgeTrianglesItr(next_eid).Except(visited);
 
-                    stack.AddRange(next_eid_tris.Select(ntid => (next_eid, ntid)));
+                    stack.AddRange(next_eid_tris.Select(ntid => new Int32Pair(next_eid, ntid)));
                     if (stack.Count == 0)
                         break;
 
                     var next = stack[0];
                     stack.RemoveAt(0);
 
+#if NET40
+	                prev_eid = next.Key;
+	                prev_tid = next.Value;
+#else
                     prev_eid = next.next_eid;
                     prev_tid = next.next_tid;
+#endif
                     count++;
                 }
 
@@ -1221,7 +1235,7 @@ namespace g4
                     if (edges_refcount.isValid(i) && edge_is_boundary(i))
                         return false;
             }
-            return true;            
+            return true;
         }
 
         public bool HasNonManifoldEdge()
@@ -1311,7 +1325,7 @@ namespace g4
 
 
 
-        
+
 
 
 
@@ -1381,7 +1395,7 @@ namespace g4
 			triangles.insert(a, i);
 			triangle_edges.insert(e2, i+2);
 			triangle_edges.insert(e1, i+1);
-			triangle_edges.insert(e0, i+0);	
+			triangle_edges.insert(e0, i+0);
 			return tid;
 		}
 
@@ -1423,7 +1437,7 @@ namespace g4
 			} else if ( b == vOld ) {
 				edges[i] = Math.Min(a, vNew);
 				edges[i+1] = Math.Max(a, vNew);
-				return 1;				
+				return 1;
 			} else
 				return -1;
 		}
@@ -1493,7 +1507,7 @@ namespace g4
             for (int j = 0; j < 3; ++j) {
                 int eid = te[j];
                 remove_edge_triangle(eid, tID);
-                if ( edge_triangles.Count(eid) == 0 ) { 
+                if ( edge_triangles.Count(eid) == 0 ) {
                     int a = edges[2 * eid];
                     vertex_edges.Remove(a, eid);
                     int b = edges[2 * eid + 1];
@@ -1557,7 +1571,7 @@ namespace g4
             List<int> triangles = new List<int>(edge_triangles.ValueItr(eab));
             if ( triangles.Count < 1 )
                 return MeshResult.Failed_BrokenTopology;
-                
+
             // create new vertex
             Vector3d vNew = 0.5 * (GetVertex(a) + GetVertex(b));
             int f = AppendVertex(vNew);
@@ -1571,7 +1585,7 @@ namespace g4
             int eaf = eab; //Edge * eAF = eAB;
             replace_edge_vertex(eaf, b, f);
 
-            // b is no longer connected to a 
+            // b is no longer connected to a
             vertex_edges.Remove(b, eab);
             // f is connected to a
             vertex_edges.Insert(f, eaf);
@@ -1601,7 +1615,7 @@ namespace g4
                     add_triangle_only(f, b, k, InvalidID, InvalidID, InvalidID) :
                     add_triangle_only(b, f, k, InvalidID, InvalidID, InvalidID);
                 //int tNew = add_triangle_only(f, b, k, InvalidID, InvalidID, InvalidID);
-                if (triangle_groups != null) 
+                if (triangle_groups != null)
                     triangle_groups.insert(triangle_groups[tid], tNew);
 
                 // edge [b,k] is no longer adjacent to tid, now it's to tNew
@@ -1899,7 +1913,7 @@ namespace g4
                 // check that edges around vert only references tris above, and reference all of them!
                 List<int> vRemoveTris = new List<int>(vTris);
                 foreach (int edgeid in vertex_edges.ValueItr(vID)) {
-                    foreach ( int tid in EdgeTrianglesItr(edgeid) ) { 
+                    foreach ( int tid in EdgeTrianglesItr(edgeid) ) {
                         CheckOrFailF(vTris.Contains(tid));
                         vRemoveTris.Remove(tid);
                     }
@@ -1968,7 +1982,7 @@ namespace g4
             {
                 int eid = te[j];
                 remove_edge_triangle(eid, tID);
-                
+
                 if (EdgeTrianglesCount(eid) == 0)
                 {
                     var vIndices = GetEdgeV(eid);
@@ -2030,7 +2044,7 @@ namespace g4
                 Util.gDevAssert(false);
                 return MeshResult.Failed_BrokenTopology;
             }
-            // look up edges. if any already have two triangles, this would 
+            // look up edges. if any already have two triangles, this would
             // create non-manifold geometry and so we do not allow it
             int e0 = find_edge(newv[0], newv[1]);
             int e1 = find_edge(newv[1], newv[2]);
@@ -2145,9 +2159,9 @@ namespace g4
             int tcd = edgetris_discard.First();
             int ecd = eDiscard;
 
-            // Need to correctly orient a,b and c,d and then check that 
+            // Need to correctly orient a,b and c,d and then check that
             // we will not join triangles with incompatible winding order
-            // I can't see how to do this purely topologically. 
+            // I can't see how to do this purely topologically.
             // So relying on closest-pairs testing.
             IndexUtil.orient_tri_edge(ref a, ref b, GetTriangle(tab));
             //int tcd_otherv = IndexUtil.orient_tri_edge_and_find_other_vtx(ref c, ref d, GetTriangle(tcd));
@@ -2166,7 +2180,7 @@ namespace g4
                 (Va.DistanceSquared(Vd) + Vb.DistanceSquared(Vc)))
                 return MeshResult.Failed_SameOrientation;
 
-            // alternative that detects normal flip of triangle tcd. This is a more 
+            // alternative that detects normal flip of triangle tcd. This is a more
             // robust geometric test, but fails if tri is degenerate...also more expensive
             //int tcd_otherv = IndexUtil.find_tri_other_vtx(c, d, triangles, tcd);
             //Vector3d otherv = GetVertex(tcd_otherv);
@@ -2184,9 +2198,9 @@ namespace g4
             if (b != d && find_edge(b, d) != InvalidID)
                 return MeshResult.Failed_InvalidNeighbourhood;
 
-            // if vertices at either end already share a common neighbour vertex, and we 
+            // if vertices at either end already share a common neighbour vertex, and we
             // do the merge, that would create duplicate edges. This is something like the
-            // 'link condition' in edge collapses. 
+            // 'link condition' in edge collapses.
             // Note that we have to catch cases where both edges to the shared vertex are
             // boundary edges, in that case we will also merge this edge later on
             if (a != c)
@@ -2225,7 +2239,7 @@ namespace g4
                 {
                     if (eid == eDiscard)
                         continue;
-                    
+
                     replace_edge_vertex(eid, c, a);
                     short rc = 0;
 
@@ -2314,7 +2328,7 @@ namespace g4
             // Once we merge ab to cd, there may be additional edges (now) connected
             // to either a or b that are connected to the same vertex on their 'other' side.
             // So we now have two boundary edges connecting the same two vertices - disaster!
-            // We need to find and merge these edges. 
+            // We need to find and merge these edges.
             // Q: I don't think it is possible to have multiple such edge-pairs at a or b
             //    But I am not certain...is a bit tricky to handle because we modify edges_v...
             merge_info.eRemovedExtra = new Vector2i(InvalidID, InvalidID);

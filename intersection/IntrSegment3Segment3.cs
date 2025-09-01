@@ -74,9 +74,10 @@ namespace g4
             var t0 = Project(p1, q1, p2);
             var t1 = Project(p1, q1, q2);
 
-            if (t0 > t1)
-            {
-                (t0, t1) = (t1, t0);
+            if (t0 > t1) {
+	            var tt = t0;
+	            t0 = t1;
+	            t1 = tt;
             }
 
             // Check overlap

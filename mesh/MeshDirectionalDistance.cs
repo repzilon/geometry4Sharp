@@ -1,10 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+#if NET40
+using DoubleSegment3dPair = System.Collections.Generic.KeyValuePair<double, g4.Segment3d>;
+#else
+using DoubleSegment3dPair = System.ValueTuple<double, g4.Segment3d>;
+#endif
 
 namespace g4
 {
-    /// <summary>
+	public struct DistanceBetweenPoints
+	{
+		public readonly double Distance;
+		public readonly Vector3d Point1;
+		public readonly Vector3d Point2;
+
+		public DistanceBetweenPoints(double distance, Vector3d point1, Vector3d point2)
+		{
+			this.Distance = distance;
+			this.Point1 = point1;
+			this.Point2 = point2;
+		}
+	}
+
+	/// <summary>
     /// Computes the minimum distance between 2 triangles, in a given direction.
     /// </summary>
     public static class MeshDirectionalDistance
@@ -100,7 +119,7 @@ namespace g4
             return pointsInside;
         }
 
-        public static (double, Segment3d) GetMinimumDistanceIntersection(Ray3d[] rays, Triangle3d triangle)
+        public static DoubleSegment3dPair GetMinimumDistanceIntersection(Ray3d[] rays, Triangle3d triangle)
         {
             var minDist = double.PositiveInfinity;
             var closetOrigin = Vector3d.MaxValue;
@@ -130,7 +149,7 @@ namespace g4
                 }
             }
 
-            return (minDist, new Segment3d(closetOrigin, closestHitPoint));
+            return new DoubleSegment3dPair(minDist, new Segment3d(closetOrigin, closestHitPoint));
         }
 
         private static Segment3d[] GetEdges(Triangle3d triangle)
@@ -143,7 +162,7 @@ namespace g4
             };
         }
 
-        public static (double distance, Vector3d point1, Vector3d point2) ComputeMinimumDirectionalDistance(
+        public static DistanceBetweenPoints ComputeMinimumDirectionalDistance(
             Triangle3d tri1, Triangle3d tri2, Vector3d directionNormalized)
         {
             Triangle3d tri1Proj = ProjectTriangleOntoTrianglePlane(tri1, tri2, directionNormalized);
@@ -152,7 +171,7 @@ namespace g4
                 tri1Proj.V1 == Vector3d.MaxValue ||
                 tri1Proj.V2 == Vector3d.MaxValue)
             {
-                return (double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
+                return new DistanceBetweenPoints(double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
             }
 
             var intersectionPoints = ComputeIntersectionPoints(tri1Proj, tri2);
@@ -173,24 +192,31 @@ namespace g4
 
             // Cast rays back and take the shortest distance
             var rays = intersectionPoints.Select(p => new Ray3d(p, -directionNormalized, true)).ToArray();
-            (double closesDist, Segment3d closestSeg) = GetMinimumDistanceIntersection(rays, tri1);
+            var pair = GetMinimumDistanceIntersection(rays, tri1);
+#if NET40
+            double closesDist = pair.Key;
+            Segment3d closestSeg = pair.Value;
+#else
+	        double closesDist = pair.Item1;
+	        Segment3d closestSeg = pair.Item2;
+#endif
 
             // Found minimum distance
             if (closestSeg.P0 != Vector3d.MaxValue && closestSeg.P1 != Vector3d.MaxValue)
             {
-                return (closesDist, closestSeg.P0, closestSeg.P1);
+                return new DistanceBetweenPoints(closesDist, closestSeg.P0, closestSeg.P1);
             }
 
-            return (double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
+            return new DistanceBetweenPoints(double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
         }
 
-        public static (double distance, Vector3d point1, Vector3d point2) ComputeMinimumDirectionalDistance(
+        public static DistanceBetweenPoints ComputeMinimumDirectionalDistance(
             DMesh3 meshA, DMesh3 meshB, Vector3d directionNormalized)
         {
             var triAIndices = meshA.TriangleIndices().ToArray();
             var triBIndices = meshB.TriangleIndices().ToArray();
 
-            (double distance, Vector3d point1, Vector3d point2) result = (double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
+            var result = new DistanceBetweenPoints(double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
 
             var syncObj = new object();
 
@@ -214,7 +240,7 @@ namespace g4
 
                     lock (syncObj)
                     {
-                        if (minDirectionalDistance.distance < result.distance)
+                        if (minDirectionalDistance.Distance < result.Distance)
                         {
                             result = minDirectionalDistance;
                         }
@@ -223,15 +249,15 @@ namespace g4
             });
 
             return result;
-        }        
-        
-        public static (double distance, Vector3d point1, Vector3d point2) ComputeMinimumDirectionalDistance(
+        }
+
+        public static DistanceBetweenPoints ComputeMinimumDirectionalDistance(
             NTMesh3 meshA, NTMesh3 meshB, Vector3d directionNormalized)
         {
             var triAIndices = meshA.TriangleIndices().ToArray();
             var triBIndices = meshB.TriangleIndices().ToArray();
 
-            (double distance, Vector3d point1, Vector3d point2) result = (double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
+            var result = new DistanceBetweenPoints(double.PositiveInfinity, Vector3d.MaxValue, Vector3d.MaxValue);
 
             var syncObj = new object();
 
@@ -255,7 +281,7 @@ namespace g4
 
                     lock (syncObj)
                     {
-                        if (minDirectionalDistance.distance < result.distance)
+                        if (minDirectionalDistance.Distance < result.Distance)
                         {
                             result = minDirectionalDistance;
                         }

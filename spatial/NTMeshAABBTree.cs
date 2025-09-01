@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+#if NET40
+using Int32Pair = System.Collections.Generic.KeyValuePair<int, int>;
+using NullableInt32Pair = g4.NTMeshAABBTree3.Intersection;
+#else
+using Int32Pair = System.ValueTuple<int,int>;
+using NullableInt32Pair = System.ValueTuple<bool,int,int>;
+#endif
 
 namespace g4
 {
     /// <summary>
     /// Hierarchical Axis-Aligned-Bounding-Box tree for a DMesh3 mesh.
     /// This class supports a variety of spatial queries, listed below.
-    /// 
+    ///
     /// Various construction strategies are also available, the default is the
     /// fastest to build but if you are doing a *lot* of queries, you might experiment
     /// with the others (eg TopDownMedian)
-    /// 
+    ///
     /// Available queries:
     ///   - FindNearestTriangle(point, maxdist)
     ///   - FindNearestHitTriangle(ray, maxdist)
@@ -26,7 +33,7 @@ namespace g4
     ///   - WindingNumber(point)
     ///   - FastWindingNumber(point)
     ///   - DoTraversal(generic_traversal_object)
-    /// 
+    ///
     /// </summary>
     public class NTMeshAABBTree3 : ISpatial
     {
@@ -80,7 +87,7 @@ namespace g4
         public enum ClusterPolicy
         {
             Default,               // currently FastVolumeMetric
-            Fastest,               // sort list and then just cluster sequential boxes. 
+            Fastest,               // sort list and then just cluster sequential boxes.
                                    //   Tree efficiency suffers, but fast.
             FastVolumeMetric,      // sort list and then check next N boxes for best cluster. Only slightly slower than
                                    //   sequential clustering but trees are often quite a bit more efficient.
@@ -787,7 +794,7 @@ namespace g4
         /// Returns true if there is *any* intersection between our mesh and 'other' mesh.
         /// TransformF takes vertices of otherTree into our tree - can be null if in same coord space
         /// </summary>
-        public virtual (bool, int, int) TestIntersectionAndGetTriangles(NTMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF = null)
+        public virtual NullableInt32Pair TestIntersectionAndGetTriangles(NTMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF = null)
         {
             if (mesh_timestamp != mesh.ShapeTimestamp)
                 throw new Exception("NTMeshAABBTree3.TestIntersection: mesh has been modified since tree construction");
@@ -795,7 +802,7 @@ namespace g4
             return find_any_intersection_get_triangles(root_index, otherTree, TransformF, otherTree.root_index, 0);
         }
 
-        protected (bool, int, int) find_any_intersection_get_triangles(int iBox, NTMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF, int oBox, int depth)
+        protected NullableInt32Pair find_any_intersection_get_triangles(int iBox, NTMeshAABBTree3 otherTree, Func<Vector3d, Vector3d> TransformF, int oBox, int depth)
         {
             int idx = box_to_index[iBox];
             int odx = otherTree.box_to_index[oBox];
@@ -831,10 +838,10 @@ namespace g4
                             continue;
                         mesh.GetTriVertices(ti, ref tri.V0, ref tri.V1, ref tri.V2);
                         if (IntrTriangle3Triangle3.Intersects(ref otri, ref tri))
-                            return (true, ti, tj);
+                            return new NullableInt32Pair(true, ti, tj);
                     }
                 }
-                return (false, -1, -1);
+                return new NullableInt32Pair(false, -1, -1);
             }
 
             // we either descend "our" tree or the other tree
@@ -869,7 +876,7 @@ namespace g4
                     oChild1 = oChild1 - 1;          // [TODO] could descend one w/ larger overlap volume first??
                     int oChild2 = otherTree.index_list[odx + 1] - 1;
 
-                    var intersects = (false, -1, -1);
+                    var intersects = new NullableInt32Pair(false, -1, -1);
                     AxisAlignedBox3d oChild1Box = otherTree.get_boxd(oChild1, TransformF);
                     if (oChild1Box.Intersects(bounds))
                         intersects = find_any_intersection_get_triangles(iBox, otherTree, TransformF, oChild1, depth + 1);
@@ -903,7 +910,7 @@ namespace g4
                     iChild1 = iChild1 - 1;          // [TODO] could descend one w/ larger overlap volume first??
                     int iChild2 = index_list[idx + 1] - 1;
 
-                    var intersects = (false, -1, -1);
+                    var intersects = new NullableInt32Pair(false, -1, -1);
                     if (box_box_intersect(iChild1, ref oBounds))
                         intersects = find_any_intersection_get_triangles(iChild1, otherTree, TransformF, oBox, depth + 1);
                     if (!intersects.Item1 && box_box_intersect(iChild2, ref oBounds))
@@ -912,10 +919,24 @@ namespace g4
                 }
 
             }
-            return (false, -1, -1);
+            return new NullableInt32Pair(false, -1, -1);
         }
 
+#if NET40
+        public struct Intersection
+        {
+	        public readonly bool Item1;
+	        public readonly int T0;
+	        public readonly int T1;
 
+	        public Intersection(bool found, int t0, int t1)
+	        {
+		        this.Item1 = found;
+		        this.T0 = t0;
+		        this.T1 = t1;
+	        }
+        }
+#endif
 
 
         public struct PointIntersection
@@ -938,17 +959,17 @@ namespace g4
         {
             public List<PointIntersection> Points;
             public List<SegmentIntersection> Segments;
-            public List<(int, int)> TrianglePairs;
+            public List<Int32Pair> TrianglePairs;
         }
 
         public class IntersectionsTrianglesQueryResult
         {
-            public List<(int, int)> TrianglePairs;
+            public List<Int32Pair> TrianglePairs;
         }
 
 
         /// <summary>
-        /// Compute all intersections between two Meshes. 
+        /// Compute all intersections between two Meshes.
         /// TransformF argument transforms vertices of otherTree to our tree (can be null if in same coord space)
         /// Returns pairs of intersecting triangles, which could intersect in either point or segment
         /// Currently *does not* return coplanar intersections.
@@ -1106,7 +1127,7 @@ namespace g4
 
 
         /// <summary>
-        /// Compute all intersections between two Meshes. 
+        /// Compute all intersections between two Meshes.
         /// TransformF argument transforms vertices of otherTree to our tree (can be null if in same coord space)
         /// Returns pairs of intersecting triangles, which could intersect in either point or segment
         /// Currently *does not* return coplanar intersections.
@@ -1120,7 +1141,7 @@ namespace g4
             {
                 Points = new List<PointIntersection>(),
                 Segments = new List<SegmentIntersection>(),
-                TrianglePairs = new List<(int, int)>()
+                TrianglePairs = new List<Int32Pair>()
             };
 
             var intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
@@ -1130,7 +1151,7 @@ namespace g4
         }
 
         /// <summary>
-        /// Compute all intersections between two Meshes. 
+        /// Compute all intersections between two Meshes.
         /// TransformF argument transforms vertices of otherTree to our tree (can be null if in same coord space)
         /// Returns pairs of intersecting triangles, which could intersect in either point or segment
         /// Currently *does not* return coplanar intersections.
@@ -1142,7 +1163,7 @@ namespace g4
 
             var result = new IntersectionsTrianglesQueryResult
             {
-                TrianglePairs = new List<(int, int)>()
+                TrianglePairs = new List<Int32Pair>()
             };
 
             var intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
@@ -1152,7 +1173,7 @@ namespace g4
         }
 
         /// <summary>
-        /// Compute all self-intersections of a mesh. 
+        /// Compute all self-intersections of a mesh.
         /// TransformF argument transforms vertices of otherTree to our tree (can be null if in same coord space)
         /// Returns pairs of intersecting triangles, which could intersect in either point or segment
         /// </summary>
@@ -1163,7 +1184,7 @@ namespace g4
 
             var result = new IntersectionsTrianglesQueryResult
             {
-                TrianglePairs = new List<(int, int)>()
+                TrianglePairs = new List<Int32Pair>()
             };
 
             var intr = new IntrTriangle3Triangle3(new Triangle3d(), new Triangle3d());
@@ -1226,7 +1247,7 @@ namespace g4
                         // triangles will not intersect (right?)
                         if (intr.Find() && intr.Type != IntersectionType.Point)
                         {
-                            result.TrianglePairs.Add((ti, tj));
+                            result.TrianglePairs.Add(new Int32Pair(ti, tj));
                         }
                     }
                 }
@@ -1348,7 +1369,7 @@ namespace g4
                         {
                             if (intr.Find())
                             {
-                                result.TrianglePairs.Add((ti, tj));
+                                result.TrianglePairs.Add(new Int32Pair(ti, tj));
 
                                 if (intr.Quantity == 1)
                                 {
@@ -1480,7 +1501,7 @@ namespace g4
                         // triangles will not intersect (right?)
                         if (intr.Test())
                         {
-                            result.TrianglePairs.Add((ti, tj));
+                            result.TrianglePairs.Add(new Int32Pair(ti, tj));
                         }
                     }
                 }
@@ -1790,7 +1811,7 @@ namespace g4
         /// <summary>
         /// Instances of this class can be passed in to the DoTraversal() function to implement your
         /// own tree-traversal queries.
-        /// NextBoxF() is called for each box node. Return false from this function to halt terminate 
+        /// NextBoxF() is called for each box node. Return false from this function to halt terminate
         /// that branch of the traversal, or true to descend into that box's children (boxes or triangles).
         /// NextTriangleF() is called for each triangle.
         /// </summary>
@@ -1870,7 +1891,7 @@ namespace g4
         /// This does consume some additional memory, mainly temporary memory during construction.
         /// (eg on a 500k sphere, about 30mb to construct, but then only 2-5mb is stored at the end)
         /// If you don't want this, just use Mesh.WindingNumber() directly. Also note that if you
-        /// are only evaluating a few times, it is not sensible - assume you need at least 
+        /// are only evaluating a few times, it is not sensible - assume you need at least
         /// hundreds of evaluations to see speed improvements.
         /// </summary>
         public virtual double WindingNumber(Vector3d p)
@@ -1955,7 +1976,7 @@ namespace g4
             // above such a node, because it makes a big speed difference. Changing this threshold does not appear
             // to make a big difference in query speed, but it does affect the build time and memory usage.
             // If the mesh is large, we can use larger caches, but on a small mesh it may result in
-            // not actually getting that many caches, which is les compute-efficient. 
+            // not actually getting that many caches, which is les compute-efficient.
             // So, we step up as the threshold the mesh gets larger.
             // [TODO] profile this? would be nice to have a functional relationship, but it is not linear...
             int WINDING_CACHE_THRESH = 100;
@@ -2069,8 +2090,8 @@ namespace g4
         {
             List<int> boxcache = WindingCache[iBox];
             int N = boxcache.Count / 2;
-            // evaluate winding calc over arbitrary triangle fan that "closes" 
-            // the open mesh below this box. 
+            // evaluate winding calc over arbitrary triangle fan that "closes"
+            // the open mesh below this box.
             Vector3d c = box_centers[iBox];
             double cluster_sum = 0;
             for (int i = 0; i < N; ++i)
@@ -2299,7 +2320,7 @@ namespace g4
         }
 
 
-        // check if we can use fwn 
+        // check if we can use fwn
         protected bool can_use_fast_winding_cache(int iBox, ref Vector3d q)
         {
             FWNInfo cacheInfo;
@@ -2398,7 +2419,7 @@ namespace g4
 
 
 
-        // storage for box nodes. 
+        // storage for box nodes.
         //   - box_to_index is a pointer into index_list
         //   - box_centers and box_extents are the centers/extents of the bounding boxes
         protected DVector<int> box_to_index;
@@ -2705,7 +2726,7 @@ namespace g4
                     spill.Add(vid);
             }
 
-            // second pass: check any spill vertices. Most are probably gone 
+            // second pass: check any spill vertices. Most are probably gone
             // now, but a few stray triangles might still exist
             int N = spill.Length;
             for (int si = 0; si < N; ++si)
@@ -2890,7 +2911,7 @@ namespace g4
             int nPairs = iCount / 2;
             int nLeft = iCount - 2 * nPairs;
 
-            // bounded greedy clustering. 
+            // bounded greedy clustering.
             // Search ahead next N boxes in sorted-by-axis list, and find
             // the one that creates minimal box metric when combined with us.
             int N = BottomUpClusterLookahead;
@@ -2981,7 +3002,7 @@ namespace g4
         }
 
 
-        // greedy-optimal clustering of boxes. Compute all-pairs distance matrix, and 
+        // greedy-optimal clustering of boxes. Compute all-pairs distance matrix, and
         // then incrementally pull out minimal pairs. This does a great job but it
         // gets insanely slow because the all-pairs matrix takes too long...
         //   (actually the real cost is probably find_smallest_upper_matrix, which maybe
@@ -3228,7 +3249,7 @@ namespace g4
                     Util.gBreakToDebugger();
         }
 
-        // accumulate triangle counts and track each box-parent index. 
+        // accumulate triangle counts and track each box-parent index.
         // also checks that triangles are contained in boxes
         private void test_coverage(int[] tri_counts, int[] parent_indices, int iBox)
         {
